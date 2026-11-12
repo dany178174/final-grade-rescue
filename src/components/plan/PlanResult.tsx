@@ -12,8 +12,9 @@ import type { PromptContext } from '../../data/prompts'
 import { STUDY_TOOLS, type Subject } from '../../data/subjects'
 import { courseGradeWith, formatPercent, type TierId } from '../../lib/grade'
 import { TIER_STYLES } from '../../lib/tierStyles'
-import { copyText, smallButton } from '../../lib/ui'
-import { CheckIcon, ShareIcon } from '../icons'
+import { copyText, primaryButton, smallButton } from '../../lib/ui'
+import { RATINGS, useFeedback } from '../feedback/FeedbackContext'
+import { ArrowRightIcon, CheckIcon, ShareIcon } from '../icons'
 import { ResourceCard } from './ResourceCard'
 import { ResourceTabs } from './ResourceTabs'
 
@@ -31,6 +32,7 @@ export type PlanResultProps = {
   desired: number
   weight: number
   promptContext: PromptContext
+  flashcardsHref: string
   onEdit: () => void
 }
 
@@ -179,6 +181,24 @@ export function PlanResult(props: PlanResultProps) {
         />
       </Section>
 
+      <Section
+        emoji="🃏"
+        title={topic ? `Flashcards for “${topic}”` : 'Make flashcards in 2 minutes'}
+        sub="AI writes the cards, you study them here, then import them to Quizlet or Anki with one paste."
+      >
+        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <ul className="space-y-1.5 text-sm text-white/70">
+            <li>✨ A ready-made prompt for any AI chat</li>
+            <li>🔄 Flip cards with “got it” and “still learning”</li>
+            <li>📲 One-tap export for Quizlet and Anki</li>
+          </ul>
+          <a href={props.flashcardsHref} className={`${primaryButton} shrink-0`}>
+            Open Flashcard Maker
+            <ArrowRightIcon className="size-4" />
+          </a>
+        </div>
+      </Section>
+
       <Section emoji="⚡" title="Study smarter, not longer" sub="Habits that work for every subject and every learner.">
         <ul className="grid gap-3 sm:grid-cols-2">
           {HABITS.map((habit) => (
@@ -202,7 +222,36 @@ export function PlanResult(props: PlanResultProps) {
           ))}
         </ul>
       </Section>
+
+      <PlanFeedback />
     </div>
+  )
+}
+
+function PlanFeedback() {
+  const feedback = useFeedback()
+  if (!feedback.enabled) return null
+  return (
+    <section className="glass-card flex flex-col items-center gap-4 p-5 text-center sm:flex-row sm:justify-between sm:p-6 sm:text-left">
+      <div>
+        <h2 className="font-semibold">Was this plan helpful?</h2>
+        <p className="text-sm text-white/55">Tap a face. It takes 5 seconds and helps us improve.</p>
+      </div>
+      <div className="flex gap-1.5">
+        {RATINGS.map((r) => (
+          <button
+            key={r.value}
+            type="button"
+            aria-label={r.label}
+            title={r.label}
+            onClick={() => feedback.open(r.value)}
+            className="grid size-11 place-items-center rounded-2xl border border-white/12 bg-white/[0.05] text-2xl transition hover:scale-110 hover:bg-white/[0.1] focus-visible:ring-4 focus-visible:ring-fuchsia-500/25 focus-visible:outline-none"
+          >
+            {r.emoji}
+          </button>
+        ))}
+      </div>
+    </section>
   )
 }
 

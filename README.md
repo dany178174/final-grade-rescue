@@ -42,6 +42,11 @@ The app uses hash routes, so it runs on any static host with no server config:
 
 - `#/`: the calculator
 - `#/plan?c=86&d=90&w=30&s=calculus&t=related+rates&l=ai&days=4-7`: a study plan. Every answer lives in the URL, so plans can be shared and reopened.
+- `#/flashcards?t=related+rates`: the Flashcard Maker. It writes an AI prompt for the topic, turns the pasted answer into flip cards, and exports them for Quizlet (copy and paste into Quizlet's Import) or Anki (download a .txt file). The last deck is kept in the browser's local storage.
+
+## Feedback
+
+The feedback form (footer link and the "Was this plan helpful?" card) sends each message to your email through [Web3Forms](https://web3forms.com). Get a free access key there and put it in `WEB3FORMS_ACCESS_KEY` in `src/config.ts`. The form stays hidden while the key is empty.
 
 ## Project layout
 
@@ -53,6 +58,8 @@ The app uses hash routes, so it runs on any static host with no server config:
 - `src/data/subjects.ts`: subjects and their video and reading resources
 - `src/data/plan.ts`: strategies per score tier, schedules per time left, study tips
 - `src/data/prompts.ts`: the prompt-writing lesson and the AI prompt templates
+- `src/pages/FlashcardsPage.tsx`, `src/lib/flashcards.ts`: the Flashcard Maker, card parsing and export
+- `src/components/feedback/`: the feedback dialog
 - `src/components/MeshBackground.tsx`: the animated gradient background (styles are in `src/index.css`)
 
 ## Editing study resources

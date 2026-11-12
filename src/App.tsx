@@ -1,12 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { FeedbackProvider } from './components/feedback/FeedbackProvider'
 import { Footer } from './components/Footer'
 import { MeshBackground } from './components/MeshBackground'
 import { inputsFromParams, type GradeInputs } from './lib/grade'
 import { parseHash, useHashRoute } from './lib/router'
 import { CalculatorPage } from './pages/CalculatorPage'
 
-// The plan page carries all the study content, so it loads only when opened.
+// The plan and flashcard pages carry most of the content, so they load only when opened.
 const StudyPlanPage = lazy(() => import('./pages/StudyPlanPage'))
+const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'))
 
 export default function App() {
   const route = useHashRoute()
@@ -18,13 +20,17 @@ export default function App() {
   }, [route.path])
 
   return (
-    <>
+    <FeedbackProvider>
       <MeshBackground />
 
       <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-12">
-        {route.path === '/plan' ? (
+        {route.path === '/plan' || route.path === '/flashcards' ? (
           <Suspense fallback={<PageLoading />}>
-            <StudyPlanPage params={route.params} />
+            {route.path === '/plan' ? (
+              <StudyPlanPage params={route.params} />
+            ) : (
+              <FlashcardsPage key={route.params.toString()} params={route.params} />
+            )}
           </Suspense>
         ) : (
           <CalculatorPage inputs={inputs} setInputs={setInputs} />
@@ -32,14 +38,14 @@ export default function App() {
 
         <Footer />
       </div>
-    </>
+    </FeedbackProvider>
   )
 }
 
 function PageLoading() {
   return (
     <div className="glass-card grid h-64 w-full max-w-3xl place-items-center text-sm text-white/60">
-      Loading your plan…
+      Loading…
     </div>
   )
 }

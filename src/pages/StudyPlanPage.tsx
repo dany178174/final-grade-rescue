@@ -112,6 +112,7 @@ export default function StudyPlanPage({ params }: { params: URLSearchParams }) {
             when: dayOption.promptWhen,
             hours: TIER_PLANS[tier].hoursForPrompt,
           }}
+          flashcardsHref={hrefFor('/flashcards', { ...gradeParams(inputs), ...answers })}
           onEdit={() => go(answers, 'subject')}
         />
       ) : (
