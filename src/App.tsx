@@ -5,8 +5,7 @@ import { PercentInput } from './components/PercentInput'
 import { ResultPanel } from './components/ResultPanel'
 import { evaluateGrades, type FieldKey, type GradeInputs } from './lib/grade'
 
-// Placeholder: swap in your Buy Me a Coffee page URL.
-const BUY_ME_A_COFFEE_URL = '#'
+const BUY_ME_A_COFFEE_URL = 'https://dungletien.gumroad.com/l/graderescue-coffee'
 
 const EMPTY_INPUTS: GradeInputs = { current: '', desired: '', weight: '' }
 
@@ -129,6 +128,8 @@ export default function App() {
           </span>
           <a
             href={BUY_ME_A_COFFEE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-md font-medium text-white/75 underline decoration-white/25 underline-offset-4 transition hover:text-white hover:decoration-pink-300/70 focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none"
           >
             Buy me a coffee ☕

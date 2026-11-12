@@ -44,4 +44,4 @@ The score is rounded to two decimals before the tier is picked, so the color alw
 
 ## Customize
 
-- **Buy me a coffee link:** set `BUY_ME_A_COFFEE_URL` in `src/App.tsx`.
+- **Buy me a coffee link:** points to a pay-what-you-want Gumroad product; change `BUY_ME_A_COFFEE_URL` in `src/App.tsx` to use another page.
