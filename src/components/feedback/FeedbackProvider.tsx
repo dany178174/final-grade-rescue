@@ -1,11 +1,10 @@
-import { useCallback, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { WEB3FORMS_ACCESS_KEY } from '../../config'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { LEARNING_STYLES, getDayOption, isLearningStyle, TIER_PLANS } from '../../data/plan'
 import { getSubject } from '../../data/subjects'
 import { evaluateGrades, inputsFromParams } from '../../lib/grade'
 import { parseHash } from '../../lib/router'
 import { primaryButton } from '../../lib/ui'
-import { FEEDBACK_ENABLED, FeedbackContext, RATINGS } from './FeedbackContext'
+import { FEEDBACK_API, FeedbackContext, RATINGS } from './FeedbackContext'
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -32,10 +31,27 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState('')
   const [botcheck, setBotcheck] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
+  const [errorText, setErrorText] = useState('')
+  const [enabled, setEnabled] = useState(false)
+
+  // Show the feedback UI only when the API says storage is connected, so the
+  // site never shows a form that can't save anything.
+  useEffect(() => {
+    let cancelled = false
+    fetch(FEEDBACK_API)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { ready?: boolean } | null) => {
+        if (!cancelled) setEnabled(Boolean(data?.ready))
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const open = useCallback(
     (initialRating?: number) => {
-      if (!FEEDBACK_ENABLED) return
+      if (!enabled) return
       if (status === 'sent') {
         setMessage('')
         setEmail('')
@@ -45,7 +61,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
       if (initialRating) setRating(initialRating)
       dialogRef.current?.showModal()
     },
-    [status],
+    [enabled, status],
   )
 
   const close = () => dialogRef.current?.close()
@@ -54,36 +70,38 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
     e.preventDefault()
     if (!message.trim() && rating === null) return
     setStatus('sending')
-    const ratingInfo = RATINGS.find((r) => r.value === rating)
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch(FEEDBACK_API, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
-          subject: `${ratingInfo?.emoji ?? '💬'} New feedback on Final Grade Rescue`,
-          from_name: 'Final Grade Rescue',
-          rating: ratingInfo ? `${ratingInfo.emoji} ${ratingInfo.label} (${ratingInfo.value}/5)` : 'No rating',
-          message: message.trim() || '(no message)',
-          email: email.trim() || undefined,
+          rating,
+          message: message.trim(),
+          email: email.trim(),
           page: describePage(),
           botcheck,
         }),
       })
-      const data = (await response.json().catch(() => ({}))) as { success?: boolean }
-      setStatus(response.ok && data.success ? 'sent' : 'error')
+      const data = (await response.json().catch(() => ({}))) as { ok?: boolean; error?: string }
+      if (response.ok && data.ok) {
+        setStatus('sent')
+      } else {
+        setErrorText(data.error ?? '')
+        setStatus('error')
+      }
     } catch {
+      setErrorText('')
       setStatus('error')
     }
   }
 
-  const value = useMemo(() => ({ enabled: FEEDBACK_ENABLED, open }), [open])
+  const value = useMemo(() => ({ enabled, open }), [enabled, open])
   const canSend = (message.trim().length > 0 || rating !== null) && status !== 'sending'
 
   return (
     <FeedbackContext.Provider value={value}>
       {children}
-      {FEEDBACK_ENABLED && (
+      {enabled && (
         <dialog
           ref={dialogRef}
           aria-labelledby="feedback-title"
@@ -189,7 +207,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
 
                 {status === 'error' && (
                   <p role="alert" className="mt-4 rounded-xl border border-red-400/30 bg-red-400/10 px-3.5 py-2.5 text-sm text-red-200">
-                    Couldn't send right now. Check your connection and try again.
+                    {errorText || "Couldn't send right now. Check your connection and try again."}
                   </p>
                 )}
 

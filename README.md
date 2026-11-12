@@ -46,7 +46,15 @@ The app uses hash routes, so it runs on any static host with no server config:
 
 ## Feedback
 
-The feedback form (footer link and the "Was this plan helpful?" card) sends each message to your email through [Web3Forms](https://web3forms.com). Get a free access key there and put it in `WEB3FORMS_ACCESS_KEY` in `src/config.ts`. The form stays hidden while the key is empty.
+The feedback form (footer link and the "Was this plan helpful?" card) saves messages through a Vercel Function, `api/feedback.ts`, into an Upstash Redis database. Read them at `#/inbox`.
+
+One-time setup in the Vercel dashboard:
+
+1. **Storage** tab: create an **Upstash Redis** database (free plan) and connect it to this project. This adds `KV_REST_API_URL` and `KV_REST_API_TOKEN`.
+2. **Settings → Environment Variables**: add `FEEDBACK_ADMIN_PASSWORD` with the password you'll use for the inbox.
+3. Redeploy.
+
+The form stays hidden until the database is connected. The API keeps the newest 1,000 messages, allows 5 messages per visitor every 10 minutes, and never stores IP addresses.
 
 ## Project layout
 
@@ -59,7 +67,8 @@ The feedback form (footer link and the "Was this plan helpful?" card) sends each
 - `src/data/plan.ts`: strategies per score tier, schedules per time left, study tips
 - `src/data/prompts.ts`: the prompt-writing lesson and the AI prompt templates
 - `src/pages/FlashcardsPage.tsx`, `src/lib/flashcards.ts`: the Flashcard Maker, card parsing and export
-- `src/components/feedback/`: the feedback dialog
+- `src/components/feedback/`, `src/pages/InboxPage.tsx`: the feedback dialog and the owner's inbox
+- `api/feedback.ts`: the Vercel Function that stores and serves feedback
 - `src/components/MeshBackground.tsx`: the animated gradient background (styles are in `src/index.css`)
 
 ## Editing study resources

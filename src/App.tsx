@@ -9,6 +9,7 @@ import { CalculatorPage } from './pages/CalculatorPage'
 // The plan and flashcard pages carry most of the content, so they load only when opened.
 const StudyPlanPage = lazy(() => import('./pages/StudyPlanPage'))
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'))
+const InboxPage = lazy(() => import('./pages/InboxPage'))
 
 export default function App() {
   const route = useHashRoute()
@@ -24,13 +25,13 @@ export default function App() {
       <MeshBackground />
 
       <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-12">
-        {route.path === '/plan' || route.path === '/flashcards' ? (
+        {route.path === '/plan' || route.path === '/flashcards' || route.path === '/inbox' ? (
           <Suspense fallback={<PageLoading />}>
-            {route.path === '/plan' ? (
-              <StudyPlanPage params={route.params} />
-            ) : (
+            {route.path === '/plan' && <StudyPlanPage params={route.params} />}
+            {route.path === '/flashcards' && (
               <FlashcardsPage key={route.params.toString()} params={route.params} />
             )}
+            {route.path === '/inbox' && <InboxPage />}
           </Suspense>
         ) : (
           <CalculatorPage inputs={inputs} setInputs={setInputs} />
