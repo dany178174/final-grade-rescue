@@ -1,6 +1,7 @@
 import type { Ref } from 'react'
 import { articleFor, formatPercent, TIER_MESSAGES, type Outcome, type TierId } from '../lib/grade'
 import { TIER_STYLES } from '../lib/tierStyles'
+import { WhyThisNumber } from './WhyThisNumber'
 
 // Long numbers (e.g. "1,234.5%") step down in size so they never overflow a phone screen.
 function numberSize(label: string): string {
@@ -37,7 +38,9 @@ function EmptyState({ hasErrors }: { hasErrors: boolean }) {
   )
 }
 
-function Result({ score, tier }: { score: number; tier: TierId }) {
+type ResultProps = { score: number; tier: TierId; current: number; desired: number; weight: number }
+
+function Result({ score, tier, current, desired, weight }: ResultProps) {
   const shown = Math.max(0, score)
   const label = `${formatPercent(shown)}%`
   const styles = TIER_STYLES[tier]
@@ -73,6 +76,8 @@ function Result({ score, tier }: { score: number; tier: TierId }) {
       <p className={`mt-4 rounded-xl border px-4 py-3 text-sm font-medium text-pretty ${styles.message}`}>
         {TIER_MESSAGES[tier]}
       </p>
+
+      <WhyThisNumber label={label} score={score} current={current} desired={desired} weight={weight} />
     </div>
   )
 }

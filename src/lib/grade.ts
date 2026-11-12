@@ -13,7 +13,7 @@ export type TierId = 'secured' | 'easy' | 'focus' | 'cram' | 'impossible'
 
 export type Outcome =
   | { status: 'incomplete'; hasErrors: boolean }
-  | { status: 'ready'; score: number; tier: TierId }
+  | { status: 'ready'; score: number; tier: TierId; current: number; desired: number; weight: number }
 
 export const TIER_MESSAGES: Record<TierId, string> = {
   secured: "You've already secured this grade! Just don't skip the exam.",
@@ -77,7 +77,17 @@ export function evaluateGrades(inputs: GradeInputs): { fields: Record<FieldKey, 
   // matches the number on screen.
   const raw = requiredFinalScore(current.value, desired.value, weight.value)
   const score = Math.round(raw * 100) / 100
-  return { fields, outcome: { status: 'ready', score, tier: tierFor(score) } }
+  return {
+    fields,
+    outcome: {
+      status: 'ready',
+      score,
+      tier: tierFor(score),
+      current: current.value,
+      desired: desired.value,
+      weight: weight.value,
+    },
+  }
 }
 
 const percentFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 })
