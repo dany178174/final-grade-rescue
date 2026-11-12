@@ -2,6 +2,8 @@ export type FieldKey = 'current' | 'desired' | 'weight'
 
 export type GradeInputs = Record<FieldKey, string>
 
+export const EMPTY_INPUTS: GradeInputs = { current: '', desired: '', weight: '' }
+
 export type FieldState =
   | { status: 'empty' }
   | { status: 'invalid'; error: string }
@@ -89,4 +91,22 @@ export function articleFor(value: number): 'a' | 'an' {
   const whole = Math.floor(Math.abs(value)).toString()
   const leadingGroup = whole.slice(0, whole.length % 3 || 3)
   return leadingGroup.startsWith('8') || leadingGroup === '11' || leadingGroup === '18' ? 'an' : 'a'
+}
+
+/** The overall course grade you end up with for a given final exam score. */
+export function courseGradeWith(current: number, weight: number, finalScore: number): number {
+  const w = weight / 100
+  return current * (1 - w) + finalScore * w
+}
+
+export function gradeParams(inputs: GradeInputs): Record<'c' | 'd' | 'w', string> {
+  return { c: inputs.current, d: inputs.desired, w: inputs.weight }
+}
+
+export function inputsFromParams(params: URLSearchParams): GradeInputs {
+  return {
+    current: sanitizePercentInput(params.get('c') ?? ''),
+    desired: sanitizePercentInput(params.get('d') ?? ''),
+    weight: sanitizePercentInput(params.get('w') ?? ''),
+  }
 }

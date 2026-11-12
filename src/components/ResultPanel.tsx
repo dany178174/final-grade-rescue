@@ -1,33 +1,6 @@
 import type { Ref } from 'react'
 import { articleFor, formatPercent, TIER_MESSAGES, type Outcome, type TierId } from '../lib/grade'
-
-const TIER_STYLES: Record<TierId, { text: string; fill: string; message: string }> = {
-  secured: {
-    text: 'text-emerald-400',
-    fill: 'bg-emerald-400',
-    message: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-200',
-  },
-  easy: {
-    text: 'text-emerald-400',
-    fill: 'bg-emerald-400',
-    message: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-200',
-  },
-  focus: {
-    text: 'text-yellow-300',
-    fill: 'bg-yellow-300',
-    message: 'border-yellow-300/25 bg-yellow-300/10 text-yellow-100',
-  },
-  cram: {
-    text: 'text-orange-400',
-    fill: 'bg-orange-400',
-    message: 'border-orange-400/25 bg-orange-400/10 text-orange-200',
-  },
-  impossible: {
-    text: 'text-red-400',
-    fill: 'bg-red-400',
-    message: 'border-red-400/25 bg-red-400/10 text-red-200',
-  },
-}
+import { TIER_STYLES } from '../lib/tierStyles'
 
 // Long numbers (e.g. "1,234.5%") step down in size so they never overflow a phone screen.
 function numberSize(label: string): string {
