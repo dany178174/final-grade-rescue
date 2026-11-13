@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { CopyButton } from '../components/CopyButton'
 import { EN_DECK_LABELS, VI_DECK_LABELS } from '../components/flashcards/deckLabels'
 import { StudyDeck } from '../components/flashcards/StudyDeck'
+import { QuizPlayer } from '../components/quiz/QuizPlayer'
+import { EN_QUIZ_LABELS, VI_QUIZ_LABELS } from '../components/quiz/quizLabels'
 import { ArrowLeftIcon, ExternalLinkIcon } from '../components/icons'
 import { SearchLink } from '../components/plan/ResourceCard'
 import { AI_TOOLS } from '../data/prompts'
@@ -22,7 +24,9 @@ import {
 } from '../lib/flashcards'
 import { hrefFor } from '../lib/router'
 import { copyText, primaryButton, secondaryButton, selectableCard, smallButton } from '../lib/ui'
+import { parseQuestions, quizFromCards, quizPrompt, toWaygroundRows, WAYGROUND_URL, type Question } from '../lib/quiz'
 import { VN_CALC_KEYS, VN_PLAN_KEYS } from '../lib/vnGrade'
+import { buildXlsx } from '../lib/xlsx'
 
 export type Lang = 'en' | 'vi'
 
@@ -30,10 +34,10 @@ const PLAN_KEYS = ['c', 'd', 'w', 's', 'o', 't', 'l', 'days'] as const
 
 const COPY = {
   en: {
-    eyebrow: '🃏 Flashcard Maker',
-    title: 'Turn any topic into a Quizlet set',
+    eyebrow: '🃏 Flashcards & Quiz',
+    title: 'Turn any topic into flashcards and quizzes',
     intro:
-      'AI writes the cards, you study them right here, then send them to Quizlet or Anki with one paste. Takes about 2 minutes.',
+      'AI writes the cards, you study them as flip cards or a quiz right here, then send them to Quizlet, Anki or Wayground. Takes about 2 minutes.',
     step1: 'Get your cards from AI',
     step1Sub: 'Tell us the topic, copy the prompt, paste it into any AI chat.',
     topic: 'Topic',
@@ -58,7 +62,7 @@ const COPY = {
     clear: 'Clear',
     step3: 'Study them now',
     step3Sub: 'Flip each card, then be honest: got it, or still learning?',
-    step4: 'Send them to Quizlet or Anki',
+    step4: 'Send them to Quizlet, Anki or Wayground',
     step4Sub: 'Keep studying on your phone with spaced repetition.',
     quizletSteps: [
       'Tap “Copy for Quizlet”.',
@@ -78,12 +82,34 @@ const COPY = {
     ] as ReactNode[],
     downloadAnki: '⬇ Download for Anki',
     warning: 'Always skim AI-made cards against your notes. AI can get a detail wrong, and a wrong flashcard is worse than none.',
+    tabCards: '🔄 Flip cards',
+    tabQuiz: '📝 Quiz',
+    quizNeedMore: 'Add at least 4 cards to turn them into a quiz.',
+    newQuiz: '🔀 New questions',
+    waygroundSteps: [
+      'Download the Excel file.',
+      <>
+        On Wayground, create a quiz and choose <span className="text-white">Import from spreadsheet</span>.
+      </>,
+      'Upload the file. Every question comes in with its answer.',
+    ] as ReactNode[],
+    downloadWayground: '⬇ Excel for Wayground',
+    openWayground: 'Open Wayground',
+    waygroundNote: 'Wayground is the new name of Quizizz. The quiz is built from your cards.',
+    aiQuizTitle: 'Or let AI write a real multiple-choice quiz',
+    aiQuizSub: "Harder, exam-style questions. Copy the prompt, then paste the AI's answer below.",
+    aiQuizLabel: 'Questions, one per line',
+    aiQuizPlaceholder: 'What is the powerhouse of the cell? | Nucleus | Mitochondria | Ribosome | Golgi body | B',
+    quizReady: (n: number) => `✓ ${n} question${n === 1 ? '' : 's'} ready`,
+    quizNone: 'No questions yet',
+    quizSkipped: (n: number) => `· ${n} line${n === 1 ? '' : 's'} skipped (format: question | A | B | C | D | answer)`,
+    aiQuizNote: 'Wayground is the new name of Quizizz.',
   },
   vi: {
-    eyebrow: '🃏 Tạo thẻ ghi nhớ',
-    title: 'Biến chủ đề bất kì thành bộ thẻ Quizlet',
+    eyebrow: '🃏 Thẻ ghi nhớ & Quiz',
+    title: 'Biến chủ đề bất kì thành thẻ ghi nhớ và quiz',
     intro:
-      'AI soạn thẻ, bạn học ngay tại đây, rồi đưa sang Quizlet hoặc Anki chỉ bằng một lần dán. Mất khoảng 2 phút.',
+      'AI soạn nội dung, bạn học ngay bằng thẻ lật hoặc quiz trắc nghiệm, rồi đưa sang Quizlet, Anki hoặc Wayground. Mất khoảng 2 phút.',
     step1: 'Nhờ AI soạn thẻ',
     step1Sub: 'Nhập chủ đề, sao chép câu lệnh rồi dán vào ứng dụng AI bất kì.',
     topic: 'Chủ đề',
@@ -108,7 +134,7 @@ const COPY = {
     clear: 'Xóa',
     step3: 'Học ngay',
     step3Sub: 'Lật từng thẻ, rồi thật lòng: đã thuộc hay chưa?',
-    step4: 'Đưa sang Quizlet hoặc Anki',
+    step4: 'Đưa sang Quizlet, Anki hoặc Wayground',
     step4Sub: 'Tiếp tục ôn trên điện thoại với lịch lặp lại ngắt quãng.',
     quizletSteps: [
       'Bấm “Sao chép cho Quizlet”.',
@@ -128,6 +154,28 @@ const COPY = {
     ] as ReactNode[],
     downloadAnki: '⬇ Tải tệp cho Anki',
     warning: 'Luôn đối chiếu thẻ do AI soạn với SGK và vở ghi. AI có thể sai chi tiết, mà một thẻ sai còn tệ hơn không có thẻ.',
+    tabCards: '🔄 Lật thẻ',
+    tabQuiz: '📝 Quiz trắc nghiệm',
+    quizNeedMore: 'Cần ít nhất 4 thẻ để tạo quiz.',
+    newQuiz: '🔀 Đổi bộ câu hỏi',
+    waygroundSteps: [
+      'Tải file Excel.',
+      <>
+        Trên Wayground, tạo quiz mới và chọn <span className="text-white">nhập từ bảng tính (Import from spreadsheet)</span>.
+      </>,
+      'Tải file lên, câu hỏi và đáp án được nhập tự động.',
+    ] as ReactNode[],
+    downloadWayground: '⬇ File Excel cho Wayground',
+    openWayground: 'Mở Wayground',
+    waygroundNote: 'Wayground là tên mới của Quizizz. Quiz được tạo tự động từ bộ thẻ của bạn.',
+    aiQuizTitle: 'Hoặc nhờ AI soạn quiz trắc nghiệm thật',
+    aiQuizSub: 'Câu hỏi khó hơn, giống đề kiểm tra. Sao chép câu lệnh, rồi dán câu trả lời của AI vào bên dưới.',
+    aiQuizLabel: 'Câu hỏi, mỗi dòng một câu',
+    aiQuizPlaceholder: 'Thủ đô của Việt Nam là thành phố nào? | Huế | Hà Nội | Đà Nẵng | Cần Thơ | B',
+    quizReady: (n: number) => `✓ Đã có ${n} câu hỏi`,
+    quizNone: 'Chưa có câu hỏi nào',
+    quizSkipped: (n: number) => `· Bỏ qua ${n} dòng (cần đúng dạng: câu hỏi | A | B | C | D | đáp án)`,
+    aiQuizNote: 'Wayground là tên mới của Quizizz.',
   },
 }
 
@@ -150,6 +198,41 @@ function save(lang: Lang, value: Saved) {
   } catch {
     // Private mode or blocked storage: the deck just won't survive a reload.
   }
+}
+
+function downloadBlob(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = name
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+function WaygroundExport({ t, questions, fileName }: { t: (typeof COPY)['en'] | (typeof COPY)['vi']; questions: Question[]; fileName: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+      <p className="font-semibold">Wayground</p>
+      <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-white/70 marker:text-white/40">
+        {t.waygroundSteps.map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
+      </ol>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => downloadBlob(buildXlsx(toWaygroundRows(questions), 'Quiz'), fileName)}
+          className={`${secondaryButton} h-10 px-4`}
+        >
+          {t.downloadWayground}
+        </button>
+        <a href={WAYGROUND_URL} target="_blank" rel="noopener noreferrer" className={`${secondaryButton} h-10 px-4`}>
+          {t.openWayground}
+          <ExternalLinkIcon className="size-3.5 text-white/50" />
+        </a>
+      </div>
+    </div>
+  )
 }
 
 function StepCard({ step, title, sub, children }: { step: number; title: string; sub: string; children: ReactNode }) {
@@ -217,6 +300,9 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
     return saved && saved.topic === initialTopic ? saved.text : ''
   })
   const [quizletCopied, setQuizletCopied] = useState(false)
+  const [tab, setTab] = useState<'cards' | 'quiz'>('cards')
+  const [quizRound, setQuizRound] = useState(0)
+  const [aiText, setAiText] = useState('')
 
   useEffect(() => {
     save(lang, { topic, text })
@@ -232,16 +318,15 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
   const prompt = lang === 'vi' ? flashcardPromptVi(promptArgs) : flashcardPrompt(promptArgs)
   const { cards, skipped } = useMemo(() => parseCards(text), [text])
   const deckKey = useMemo(() => cards.map((c) => c.term + '\u0000' + c.definition).join('\u0001'), [cards])
+  // A new random quiz whenever the deck changes or the learner asks for one.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const autoQuiz = useMemo(() => quizFromCards(cards), [deckKey, quizRound])
+  const aiQuiz = useMemo(() => parseQuestions(aiText), [aiText])
+  const quizText = quizPrompt({ topic: topic.trim(), subject: ctx.subjectName, count: 15, lang })
+  const quizFile = fileNameFor(topic).replace('-flashcards.txt', '-quiz.xlsx')
+  const quizLabels = lang === 'vi' ? VI_QUIZ_LABELS : EN_QUIZ_LABELS
 
-  const downloadAnki = () => {
-    const blob = new Blob([toAnkiFile(cards)], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = fileNameFor(topic)
-    link.click()
-    URL.revokeObjectURL(url)
-  }
+  const downloadAnki = () => downloadBlob(new Blob([toAnkiFile(cards)], { type: 'text/plain;charset=utf-8' }), fileNameFor(topic))
 
   return (
     <main className="w-full max-w-3xl">
@@ -365,11 +450,43 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
         {cards.length > 0 && (
           <>
             <StepCard step={3} title={t.step3} sub={t.step3Sub}>
-              <StudyDeck key={deckKey} cards={cards} labels={lang === 'vi' ? VI_DECK_LABELS : EN_DECK_LABELS} />
+              <div role="tablist" className="mb-4 grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-black/25 p-1">
+                {(
+                  [
+                    { id: 'cards', label: t.tabCards },
+                    { id: 'quiz', label: t.tabQuiz },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === item.id}
+                    onClick={() => setTab(item.id)}
+                    className={`rounded-xl py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none ${
+                      tab === item.id ? 'bg-white/[0.12] text-white' : 'text-white/55 hover:text-white/85'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              {tab === 'cards' ? (
+                <StudyDeck key={deckKey} cards={cards} labels={lang === 'vi' ? VI_DECK_LABELS : EN_DECK_LABELS} />
+              ) : autoQuiz.length ? (
+                <>
+                  <QuizPlayer key={`${deckKey}-${quizRound}`} questions={autoQuiz} labels={quizLabels} />
+                  <button type="button" onClick={() => setQuizRound((r) => r + 1)} className={`${smallButton} mt-3`}>
+                    {t.newQuiz}
+                  </button>
+                </>
+              ) : (
+                <p className="rounded-2xl border border-dashed border-white/15 p-5 text-center text-sm text-white/55">{t.quizNeedMore}</p>
+              )}
             </StepCard>
 
             <StepCard step={4} title={t.step4} sub={t.step4Sub}>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
                   <p className="font-semibold">Quizlet</p>
                   <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-white/70 marker:text-white/40">
@@ -405,11 +522,60 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
                     </button>
                   </div>
                 </div>
+
+                {autoQuiz.length > 0 && <WaygroundExport t={t} questions={autoQuiz} fileName={quizFile} />}
               </div>
+              {autoQuiz.length > 0 && <p className="mt-3 text-xs text-white/45">{t.waygroundNote}</p>}
               <p className="mt-4 text-xs text-white/45">{t.warning}</p>
             </StepCard>
           </>
         )}
+
+        <StepCard step={cards.length > 0 ? 5 : 3} title={t.aiQuizTitle} sub={t.aiQuizSub}>
+          <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-xs font-semibold tracking-wide text-white/50 uppercase">{t.yourPrompt}</p>
+              <CopyButton text={quizText} label={t.copyPrompt} copiedLabel={t.copied} />
+            </div>
+            <p className="mt-2 text-sm leading-relaxed whitespace-pre-line text-white/80">{quizText}</p>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm text-white/55">{t.pasteInto}</span>
+            {AI_TOOLS.map((tool) => (
+              <a key={tool.name} href={tool.url} target="_blank" rel="noopener noreferrer" className={smallButton}>
+                {tool.name}
+                <ExternalLinkIcon className="size-3.5 text-white/50" />
+              </a>
+            ))}
+          </div>
+          <label htmlFor="quiz-text" className="mt-5 mb-2 block text-sm font-medium text-white/85">
+            {t.aiQuizLabel}
+          </label>
+          <textarea
+            id="quiz-text"
+            value={aiText}
+            onChange={(e) => setAiText(e.target.value)}
+            rows={6}
+            spellCheck={false}
+            placeholder={t.aiQuizPlaceholder}
+            className="w-full resize-y rounded-2xl border border-white/15 bg-white/[0.06] p-4 font-mono text-sm leading-relaxed text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+          />
+          <p className="mt-2 text-sm" aria-live="polite">
+            {aiQuiz.questions.length > 0 ? (
+              <span className="font-medium text-emerald-300">{t.quizReady(aiQuiz.questions.length)}</span>
+            ) : (
+              <span className="text-white/50">{t.quizNone}</span>
+            )}
+            {aiQuiz.skipped > 0 && <span className="ml-2 text-amber-200/80">{t.quizSkipped(aiQuiz.skipped)}</span>}
+          </p>
+          {aiQuiz.questions.length > 0 && (
+            <div className="mt-5 space-y-4">
+              <QuizPlayer key={aiText} questions={aiQuiz.questions} labels={quizLabels} />
+              <WaygroundExport t={t} questions={aiQuiz.questions} fileName={quizFile.replace('-quiz', '-ai-quiz')} />
+              <p className="text-xs text-white/45">{t.aiQuizNote}</p>
+            </div>
+          )}
+        </StepCard>
       </div>
     </main>
   )

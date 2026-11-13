@@ -48,7 +48,8 @@ A fully Vietnamese version for students in Vietnam, following Chương trình GD
 
 - **Calculator (`#/vn`)**: 0–10 scores written the Vietnamese way (9,8). Semester mode uses `ĐTB = (tổng ĐGTX + 2 × giữa kì + 3 × cuối kì) ÷ (số ĐGTX + 5)` with 2–4 regular assessments (miệng, 15 phút); year mode uses `(HK I + 2 × HK II) ÷ 3`. Students fill in the scores they have, leave the rest blank, and see the average score they need on what's left, with a step-by-step explanation.
 - **Study plan (`#/vn/ke-hoach`)**: grade 6–12 and the scored subjects for THCS or THPT, learning style and time left. Videos are YouTube searches in Vietnamese tuned to subject, grade, topic and the upcoming test; reading links go to Vietnamese e-textbooks, solution sites and news; AI prompts and the prompt-writing lesson are in Vietnamese.
-- **Flashcards (`#/vn/the-ghi-nho`)**: the Flashcard Maker in Vietnamese.
+- **Flashcards & quiz (`#/vn/the-ghi-nho`)**: the Flashcard Maker in Vietnamese.
+- **Grade board (`#/vn/bang-diem`)**: the class spreadsheet as a page. Per subject, any number of hệ số 1 (miệng, 15 phút, chuyên đề), hệ số 2 (45 phút, giữa kì) and one hệ số 3 score, each marked final or planned. Shows each subject's average (and year average in HK II), the projected kết quả học tập (Tốt/Khá/Đạt) and whether the student qualifies for Học sinh Giỏi / Học sinh Xuất sắc under Thông tư 22, then picks the 6 subjects where 8,0 or 9,0 is easiest to reach and works out the score needed on every unfinished test. Logic in `src/lib/vnBoard.ts`.
 - **Multi-subject timetable (`#/vn/lich-on`)**: students add every subject in the exam period (exam date, test type, score needed, hardest topic) plus free hours on weekdays/weekends and start times. `src/lib/vnSchedule.ts` splits each day into 40-minute sessions at real clock times, giving more sessions to sooner exams and higher required scores, interleaving subjects, and ending the evening before each exam with a light review. Every session lists its task with the exact resources (video search, old tests, AI prompt to copy, flashcards). Sessions can be ticked off, exported to the phone calendar as `.ics` with reminders, and shared by link; the timetable is remembered on the device.
 
 Logic lives in `src/lib/vnGrade.ts`; content in `src/data/vn/`; pages in `src/pages/vn/` and `src/components/vn/`.
@@ -60,6 +61,14 @@ The app uses hash routes, so it runs on any static host with no server config:
 - `#/`: the calculator
 - `#/plan?c=86&d=90&w=30&s=calculus&t=related+rates&l=ai&days=4-7`: a study plan. Every answer lives in the URL, so plans can be shared and reopened.
 - `#/flashcards?t=related+rates`: the Flashcard Maker. It writes an AI prompt for the topic, turns the pasted answer into flip cards, and exports them for Quizlet (copy and paste into Quizlet's Import) or Anki (download a .txt file). The last deck is kept in the browser's local storage.
+
+## Quizzes and Wayground
+
+The Flashcard Maker also turns any deck of 4+ cards into a multiple-choice quiz automatically (definition → pick the term), and accepts AI-written questions in the form `question | A | B | C | D | answer`. Either quiz can be played on the page or downloaded as an `.xlsx` in Wayground's (formerly Quizizz) spreadsheet-import template, written by the small zip/XML writer in `src/lib/xlsx.ts`.
+
+## Layout
+
+On wide screens a left rail holds the main tools and a right rail holds the install-app and buy-me-a-coffee cards; on phones an app-style tab bar sits at the bottom and the two cards appear above the footer (`src/components/shell/`).
 
 ## Feedback
 
