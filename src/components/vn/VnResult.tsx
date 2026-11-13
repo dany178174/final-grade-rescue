@@ -67,7 +67,7 @@ function ReadyResult({ outcome }: { outcome: Ready }) {
       {!single && (
         <ul className="mt-3 flex flex-wrap justify-center gap-1.5">
           {outcome.remaining.map((item) => (
-            <li key={item.key} className="rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-1 text-xs text-white/75">
+            <li key={item.key} className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-white/75">
               {item.label}
               {item.weight > 1 && <span className="text-white/45"> · hệ số {item.weight}</span>}
             </li>
@@ -184,7 +184,7 @@ function WhyVn({ outcome, label }: { outcome: Ready; label: string }) {
 
   return (
     <details className="group mt-3 text-left">
-      <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium text-white/60 transition hover:text-white focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+      <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium text-white/60 transition hover:text-white focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
         Vì sao lại là {label} điểm?
         <svg
           aria-hidden

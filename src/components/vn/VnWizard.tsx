@@ -10,7 +10,7 @@ export type VnSubjectAnswer = { lop: string; mon: string; khac?: string; cd?: st
 function StepHeading({ step, title, sub }: { step: number; title: string; sub: string }) {
   return (
     <div className="mb-6">
-      <p className="text-xs font-semibold tracking-[0.14em] text-fuchsia-200/80 uppercase">Bước {step}/3</p>
+      <p className="text-xs font-semibold tracking-[0.14em] text-accent-200/80 uppercase">Bước {step}/3</p>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">{title}</h1>
       <p className="mt-1.5 text-sm text-pretty text-white/60 sm:text-base">{sub}</p>
     </div>
@@ -22,7 +22,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="mt-6 inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-white/60 transition hover:text-white focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none"
+      className="mt-6 inline-flex items-center gap-1.5 rounded-lg text-sm font-medium text-white/60 transition hover:text-white focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
     >
       <ArrowLeftIcon className="size-4" />
       Quay lại
@@ -59,7 +59,7 @@ function TextField({
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         aria-describedby={hint ? `${id}-hint` : undefined}
-        className="h-12 w-full rounded-2xl border border-white/15 bg-white/[0.06] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+        className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
       />
       {hint && (
         <p id={`${id}-hint`} className="mt-1.5 text-xs text-white/50">
@@ -199,13 +199,13 @@ export function VnStyleStep({
             >
               <span
                 aria-hidden
-                className="grid size-12 shrink-0 place-items-center rounded-2xl border border-white/10 bg-linear-to-br from-blue-500/20 via-purple-500/15 to-pink-500/20 text-2xl"
+                className="grid size-12 shrink-0 place-items-center rounded-2xl border border-white/10 bg-accent-500/[0.12] text-2xl"
               >
                 {style.emoji}
               </span>
               <span>
                 <span className="block text-base font-semibold">{style.label}</span>
-                <span className="block text-[11px] font-semibold tracking-[0.12em] text-fuchsia-200/70 uppercase">
+                <span className="block text-[11px] font-semibold tracking-[0.12em] text-accent-200/70 uppercase">
                   {style.tagline}
                 </span>
                 <span className="mt-1.5 block text-sm text-pretty text-white/60">{style.description}</span>

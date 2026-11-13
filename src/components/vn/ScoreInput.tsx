@@ -39,7 +39,7 @@ export function ScoreInput({ id, label, hint, error, value, placeholder = 'Chưa
           compact ? 'h-12 px-3 text-center text-lg' : 'h-14 px-4 text-lg',
           invalid
             ? 'border-red-400/70 focus:border-red-400 focus:ring-red-500/20'
-            : 'border-white/15 hover:border-white/25 focus:border-fuchsia-300/60 focus:ring-fuchsia-500/20',
+            : 'border-white/15 hover:border-white/25 focus:border-accent-300/60 focus:ring-accent-500/20',
         ].join(' ')}
       />
       {(hint || error) && (

@@ -41,25 +41,19 @@ export default function App() {
     <FeedbackProvider lang={lang}>
       <MeshBackground />
 
-      <div className="relative z-10 px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pt-12 xl:pb-12">
-        <div className="mx-auto xl:grid xl:max-w-[100rem] xl:grid-cols-[15rem_minmax(0,1fr)_16rem] xl:items-start xl:gap-8">
-          <aside className="hidden xl:sticky xl:top-12 xl:block">
-            <SideNav lang={lang} path={route.path} />
-          </aside>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/[0.06] bg-ink-900/75 backdrop-blur-xl xl:block">
+        <SideNav lang={lang} path={route.path} />
+      </aside>
 
-          <div className="flex min-h-[calc(100dvh-9rem)] flex-col items-center justify-center xl:min-h-[calc(100dvh-6rem)]">
-            <Suspense fallback={<PageLoading vn={vn} />}>
-              {renderPage(route, { inputs, setInputs, vnInputs, setVnInputs })}
-            </Suspense>
-            <div className="contents xl:hidden">
-              <SupportCards lang={lang} layout="row" />
-            </div>
-            <Footer lang={lang} />
+      <div className="relative z-10 px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pt-12 xl:pt-10 xl:pr-10 xl:pb-12 xl:pl-[calc(16rem+2.5rem)]">
+        <div className="mx-auto flex min-h-[calc(100dvh-9rem)] max-w-5xl flex-col items-center justify-center xl:min-h-[calc(100dvh-5rem)]">
+          <Suspense fallback={<PageLoading vn={vn} />}>
+            {renderPage(route, { inputs, setInputs, vnInputs, setVnInputs })}
+          </Suspense>
+          <div className="contents xl:hidden">
+            <SupportCards lang={lang} layout="row" />
           </div>
-
-          <aside className="hidden xl:sticky xl:top-12 xl:block">
-            <SupportCards lang={lang} layout="rail" />
-          </aside>
+          <Footer lang={lang} />
         </div>
       </div>
 

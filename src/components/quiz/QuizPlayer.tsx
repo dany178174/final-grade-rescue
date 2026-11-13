@@ -68,7 +68,7 @@ export function QuizPlayer({ questions, labels }: { questions: Question[]; label
       </div>
       <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden>
         <div
-          className="h-full rounded-full bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 transition-[width] duration-300"
+          className="h-full rounded-full bg-accent-400 transition-[width] duration-300"
           style={{ width: `${(position / order.length) * 100}%` }}
         />
       </div>
@@ -92,7 +92,7 @@ export function QuizPlayer({ questions, labels }: { questions: Question[]; label
                 type="button"
                 onClick={() => pick(i)}
                 disabled={picked !== null}
-                className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left text-sm transition focus-visible:ring-4 focus-visible:ring-fuchsia-500/25 focus-visible:outline-none ${state}`}
+                className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left text-sm transition focus-visible:ring-4 focus-visible:ring-accent-500/25 focus-visible:outline-none ${state}`}
               >
                 <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-white/10 text-xs font-bold">{LETTERS[i]}</span>
                 <span className="pt-0.5 text-pretty">{option}</span>

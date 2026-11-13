@@ -34,7 +34,7 @@ const PLAN_KEYS = ['c', 'd', 'w', 's', 'o', 't', 'l', 'days'] as const
 
 const COPY = {
   en: {
-    eyebrow: '🃏 Flashcards & Quiz',
+    eyebrow: 'Flashcards & Quiz',
     title: 'Turn any topic into flashcards and quizzes',
     intro:
       'AI writes the cards, you study them as flip cards or a quiz right here, then send them to Quizlet, Anki or Wayground. Takes about 2 minutes.',
@@ -106,7 +106,7 @@ const COPY = {
     aiQuizNote: 'Wayground is the new name of Quizizz.',
   },
   vi: {
-    eyebrow: '🃏 Thẻ ghi nhớ & Quiz',
+    eyebrow: 'Thẻ ghi nhớ & Quiz',
     title: 'Biến chủ đề bất kì thành thẻ ghi nhớ và quiz',
     intro:
       'AI soạn nội dung, bạn học ngay bằng thẻ lật hoặc quiz trắc nghiệm, rồi đưa sang Quizlet, Anki hoặc Wayground. Mất khoảng 2 phút.',
@@ -239,7 +239,7 @@ function StepCard({ step, title, sub, children }: { step: number; title: string;
   return (
     <section className="glass-card p-5 sm:p-8">
       <div className="flex items-start gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 text-sm font-bold">
+        <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-accent-500 text-sm font-bold">
           {step}
         </span>
         <div>
@@ -337,15 +337,11 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
         </a>
       </nav>
 
-      <header className="glass-card relative mb-4 overflow-hidden p-6 sm:mb-5 sm:p-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent"
-        />
-        <div className="relative">
-          <p className="text-xs font-semibold tracking-[0.14em] text-fuchsia-200/80 uppercase">{t.eyebrow}</p>
-          <h1 className="mt-2 text-2xl leading-tight font-semibold tracking-tight text-balance sm:text-3xl">{t.title}</h1>
-          <p className="mt-2 text-sm text-pretty text-white/65 sm:text-base">{t.intro}</p>
+      <header className="mb-6 px-1 sm:mb-8">
+        <div>
+          <p className="inline-flex items-center rounded-full border border-accent-300/20 bg-accent-500/10 px-2.5 py-1 text-[11px] font-semibold tracking-[0.1em] text-accent-200 uppercase">{t.eyebrow}</p>
+          <h1 className="mt-3 text-[1.75rem] leading-tight font-semibold tracking-tight text-balance sm:text-4xl">{t.title}</h1>
+          <p className="mt-3 max-w-2xl text-sm text-pretty text-white/60 sm:text-base">{t.intro}</p>
         </div>
       </header>
 
@@ -362,7 +358,7 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
             autoComplete="off"
             placeholder={ctx.topicPlaceholder ?? t.topicPlaceholder}
             onChange={(e) => setTopic(e.target.value)}
-            className="h-12 w-full rounded-2xl border border-white/15 bg-white/[0.06] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+            className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
           />
 
           <p className="mt-4 mb-2 text-sm font-medium text-white/85">{t.howMany}</p>
@@ -417,7 +413,7 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
             rows={8}
             spellCheck={false}
             placeholder={t.textPlaceholder}
-            className="w-full resize-y rounded-2xl border border-white/15 bg-white/[0.06] p-4 font-mono text-sm leading-relaxed text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+            className="w-full resize-y rounded-2xl border border-white/10 bg-white/[0.04] p-4 font-mono text-sm leading-relaxed text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
           />
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm" aria-live="polite">
@@ -463,7 +459,7 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
                     role="tab"
                     aria-selected={tab === item.id}
                     onClick={() => setTab(item.id)}
-                    className={`rounded-xl py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none ${
+                    className={`rounded-xl py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none ${
                       tab === item.id ? 'bg-white/[0.12] text-white' : 'text-white/55 hover:text-white/85'
                     }`}
                   >
@@ -558,7 +554,7 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
             rows={6}
             spellCheck={false}
             placeholder={t.aiQuizPlaceholder}
-            className="w-full resize-y rounded-2xl border border-white/15 bg-white/[0.06] p-4 font-mono text-sm leading-relaxed text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+            className="w-full resize-y rounded-2xl border border-white/10 bg-white/[0.04] p-4 font-mono text-sm leading-relaxed text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
           />
           <p className="mt-2 text-sm" aria-live="polite">
             {aiQuiz.questions.length > 0 ? (

@@ -37,7 +37,7 @@ const INITIAL_DAYS = 7
 
 const COLORS = [
   'border-sky-300/30 bg-sky-400/10 text-sky-200',
-  'border-fuchsia-300/30 bg-fuchsia-400/10 text-fuchsia-200',
+  'border-accent-300/30 bg-accent-400/10 text-accent-200',
   'border-emerald-300/30 bg-emerald-400/10 text-emerald-200',
   'border-amber-300/30 bg-amber-400/10 text-amber-200',
   'border-violet-300/30 bg-violet-400/10 text-violet-200',
@@ -106,13 +106,13 @@ function initialSettings(params: URLSearchParams): MultiSettings {
 }
 
 const fieldClass =
-  'h-12 w-full rounded-2xl border border-white/15 bg-white/[0.06] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20 disabled:opacity-50'
+  'h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20 disabled:opacity-50'
 
 function Card({ step, title, sub, children }: { step: number; title: string; sub?: string; children: ReactNode }) {
   return (
     <section className="glass-card p-5 sm:p-8">
       <div className="flex items-start gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 text-sm font-bold">
+        <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-accent-500 text-sm font-bold">
           {step}
         </span>
         <div>
@@ -295,14 +295,13 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
         </a>
       </nav>
 
-      <header className="glass-card relative mb-4 overflow-hidden p-6 sm:mb-5 sm:p-8">
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent" />
-        <div className="relative">
-          <p className="text-xs font-semibold tracking-[0.14em] text-fuchsia-200/80 uppercase">🗓️ Lịch ôn nhiều môn</p>
-          <h1 className="mt-2 text-2xl leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
+      <header className="mb-6 px-1 sm:mb-8">
+        <div>
+          <p className="inline-flex items-center rounded-full border border-accent-300/20 bg-accent-500/10 px-2.5 py-1 text-[11px] font-semibold tracking-[0.1em] text-accent-200 uppercase">Lịch ôn nhiều môn</p>
+          <h1 className="mt-3 text-[1.75rem] leading-tight font-semibold tracking-tight text-balance sm:text-4xl">
             Thời gian biểu ôn thi cho tất cả các môn
           </h1>
-          <p className="mt-2 text-sm text-pretty text-white/65 sm:text-base">
+          <p className="mt-3 max-w-2xl text-sm text-pretty text-white/60 sm:text-base">
             Nhập các môn sắp kiểm tra, web tự chia lịch theo ngày thi, điểm cần đạt và thời gian rảnh của bạn. Mỗi buổi đều
             có sẵn video, đề luyện hoặc câu lệnh AI để học ngay.
           </p>
@@ -354,7 +353,7 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                       type="time"
                       value={settings[startKey]}
                       onChange={(e) => e.target.value && set({ [startKey]: e.target.value } as Partial<MultiSettings>)}
-                      className="h-10 rounded-xl border border-white/15 bg-white/[0.06] px-3 text-white outline-none focus:border-fuchsia-300/60 focus:ring-4 focus:ring-fuchsia-500/20"
+                      className="h-10 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-white outline-none focus:border-accent-300/60 focus:ring-4 focus:ring-accent-500/20"
                     />
                   </label>
                 </div>
@@ -505,7 +504,7 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                       </p>
                       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden>
                         <div
-                          className="h-full rounded-full bg-linear-to-r from-blue-400 via-purple-400 to-pink-400"
+                          className="h-full rounded-full bg-accent-400"
                           style={{ width: `${info.sessions ? (sessionsDone / info.sessions) * 100 : 0}%` }}
                         />
                       </div>
@@ -545,7 +544,7 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                     <li key={day.date}>
                       <div className="mb-2 flex items-center gap-2">
                         <h3 className="font-semibold">{formatDay(day.date)}</h3>
-                        {tag && <span className="rounded-full bg-fuchsia-400/15 px-2 py-0.5 text-[11px] font-semibold text-fuchsia-200">{tag}</span>}
+                        {tag && <span className="rounded-full bg-accent-400/15 px-2 py-0.5 text-[11px] font-semibold text-accent-200">{tag}</span>}
                         {day.weekend && <span className="text-xs text-white/40">Cuối tuần</span>}
                       </div>
                       {day.exams.map((id) => {
@@ -607,8 +606,8 @@ function SessionItem({
         onClick={onToggle}
         aria-pressed={done}
         aria-label={done ? 'Bỏ đánh dấu xong' : 'Đánh dấu xong'}
-        className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg border transition focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none ${
-          done ? 'border-emerald-300/60 bg-emerald-400/80 text-[#05061a]' : 'border-white/25 hover:border-white/50'
+        className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-lg border transition focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none ${
+          done ? 'border-emerald-300/60 bg-emerald-400/80 text-ink-950' : 'border-white/25 hover:border-white/50'
         }`}
       >
         {done && <CheckIcon className="size-4" />}

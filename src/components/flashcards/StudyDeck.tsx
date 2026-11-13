@@ -96,7 +96,7 @@ export function StudyDeck({ cards, labels = EN_DECK_LABELS }: { cards: Card[]; l
       </div>
       <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden>
         <div
-          className="h-full rounded-full bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 transition-[width] duration-300"
+          className="h-full rounded-full bg-accent-400 transition-[width] duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -107,7 +107,7 @@ export function StudyDeck({ cards, labels = EN_DECK_LABELS }: { cards: Card[]; l
             type="button"
             onClick={() => setFlipped((f) => !f)}
             aria-label={flipped ? labels.showTerm(card.definition) : labels.showDefinition(card.term)}
-            className="flip-card block h-64 w-full rounded-3xl text-left focus-visible:ring-4 focus-visible:ring-fuchsia-500/30 focus-visible:outline-none sm:h-72"
+            className="flip-card block h-64 w-full rounded-3xl text-left focus-visible:ring-4 focus-visible:ring-accent-500/30 focus-visible:outline-none sm:h-72"
           >
             <span className="flip-card-inner block" data-flipped={flipped}>
               <span className="flip-card-face flex flex-col rounded-3xl border border-white/15 bg-[#161a3d] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
@@ -117,8 +117,8 @@ export function StudyDeck({ cards, labels = EN_DECK_LABELS }: { cards: Card[]; l
                 </span>
                 <span className="text-center text-xs text-white/40">{labels.tapHint}</span>
               </span>
-              <span className="flip-card-face flip-card-back flex flex-col rounded-3xl border border-fuchsia-300/25 bg-[#211a42] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
-                <span className="text-[11px] font-semibold tracking-[0.14em] text-fuchsia-200/70 uppercase">
+              <span className="flip-card-face flip-card-back flex flex-col rounded-3xl border border-accent-300/25 bg-[#211a42] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
+                <span className="text-[11px] font-semibold tracking-[0.14em] text-accent-200/70 uppercase">
                   {labels.definition}
                 </span>
                 <span className="flex flex-1 items-center justify-center overflow-auto py-3 text-center text-lg leading-relaxed text-pretty text-white/90 sm:text-xl">

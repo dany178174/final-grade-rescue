@@ -151,7 +151,7 @@ export default function InboxPage() {
           className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent"
         />
         <div className="relative">
-          <p className="text-xs font-semibold tracking-[0.14em] text-fuchsia-200/80 uppercase">📬 Owner only</p>
+          <p className="text-xs font-semibold tracking-[0.14em] text-accent-200/80 uppercase">📬 Owner only</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Feedback inbox</h1>
 
           {entries ? (
@@ -178,7 +178,7 @@ export default function InboxPage() {
                 autoComplete="current-password"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                className="h-12 w-full rounded-2xl border border-white/15 bg-white/[0.06] px-4 text-base text-white transition outline-none hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+                className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base text-white transition outline-none hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
               />
               <p className="mt-1.5 text-xs text-white/50">
                 The FEEDBACK_ADMIN_PASSWORD you set in Vercel. It's remembered until you close this tab.
@@ -245,7 +245,7 @@ export default function InboxPage() {
 
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                   {entry.page && (
-                    <span className="rounded-full border border-white/15 bg-white/[0.06] px-2.5 py-1 text-white/60">
+                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-white/60">
                       {entry.page}
                     </span>
                   )}

@@ -40,16 +40,16 @@ export function VnCalculatorPage({ inputs, setInputs }: Props) {
         <a
           href="#/"
           lang="en"
-          className="mb-5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-xs font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="mb-5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
         >
           🇺🇸 US grading (English) →
         </a>
-        <div className="mb-4 grid size-12 place-items-center rounded-2xl border border-white/15 bg-linear-to-br from-blue-500/30 via-purple-500/25 to-pink-500/30 shadow-lg shadow-purple-950/40">
-          <LifebuoyIcon className="size-6 text-white" />
+        <div className="mb-4 grid size-12 place-items-center rounded-2xl border border-accent-300/25 bg-accent-500/15 shadow-[0_10px_30px_-12px_rgb(125_104_250/0.8)]">
+          <LifebuoyIcon className="size-6 text-accent-200" />
         </div>
         <h1 className="text-[1.65rem] leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
           Máy tính{' '}
-          <span className="bg-linear-to-r from-sky-300 via-fuchsia-300 to-pink-300 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-accent-300 via-accent-200 to-sky-300 bg-clip-text text-transparent">
             Cứu Điểm
           </span>
         </h1>
@@ -73,7 +73,7 @@ export function VnCalculatorPage({ inputs, setInputs }: Props) {
                 role="tab"
                 aria-selected={inputs.mode === tab.id}
                 onClick={() => set({ mode: tab.id })}
-                className={`rounded-xl py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none ${
+                className={`rounded-xl py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none ${
                   inputs.mode === tab.id ? 'bg-white/[0.12] text-white' : 'text-white/55 hover:text-white/85'
                 }`}
               >

@@ -55,7 +55,7 @@ export function PercentInput({
             'focus:bg-white/[0.09] focus:ring-4',
             invalid
               ? 'border-red-400/70 focus:border-red-400 focus:ring-red-500/20'
-              : 'border-white/15 hover:border-white/25 focus:border-fuchsia-300/60 focus:ring-fuchsia-500/20',
+              : 'border-white/15 hover:border-white/25 focus:border-accent-300/60 focus:ring-accent-500/20',
           ].join(' ')}
         />
         <span

@@ -1,12 +1,13 @@
 import { useId, useRef } from 'react'
 import { primaryButton } from '../../lib/ui'
+import { CoffeeIcon, PhoneDownloadIcon } from '../icons'
 import { COFFEE_URL, type Lang } from './nav'
 import { useInstall } from './useInstall'
 
 const COPY = {
   vi: {
     installTitle: 'Cài app lên điện thoại',
-    installSub: 'Mở nhanh từ màn hình chính, dùng được cả khi mất mạng.',
+    installSub: 'Mở nhanh từ màn hình chính, dùng cả khi mất mạng.',
     install: 'Cài app',
     howTo: 'Xem cách cài',
     openOnPhone: 'Mở web trên điện thoại để cài',
@@ -14,7 +15,7 @@ const COPY = {
     iosSteps: ['Mở trang này bằng Safari.', 'Bấm nút Chia sẻ (hình vuông có mũi tên lên).', 'Chọn “Thêm vào MH chính”, rồi bấm “Thêm”.'],
     done: 'Đã hiểu',
     coffeeTitle: 'Mời mình ly cà phê',
-    coffeeSub: 'Giúp web luôn miễn phí, không quảng cáo cho mọi học sinh.',
+    coffeeSub: 'Giúp web luôn miễn phí, không quảng cáo.',
     coffee: 'Ủng hộ từ 1$',
   },
   en: {
@@ -40,22 +41,26 @@ function InstallCard({ lang, compact }: { lang: Lang; compact?: boolean }) {
   if (installed) return null
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-sky-300/30 bg-linear-to-br from-sky-500/25 via-indigo-500/20 to-purple-500/25 p-4 shadow-[0_18px_40px_-18px_rgb(56_189_248/0.6)]">
-      <p aria-hidden className={compact ? 'text-2xl' : 'text-3xl'}>
-        📲
-      </p>
-      <p className="mt-1.5 font-semibold leading-snug">{t.installTitle}</p>
-      {!compact && <p className="mt-1 text-xs text-pretty text-white/65">{t.installSub}</p>}
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-3.5">
+      <div className="flex items-start gap-3">
+        <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-lg bg-sky-400/[0.14] text-sky-300">
+          <PhoneDownloadIcon className="size-5" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm leading-snug font-semibold">{t.installTitle}</span>
+          {!compact && <span className="mt-0.5 block text-xs text-pretty text-white/50">{t.installSub}</span>}
+        </span>
+      </div>
       {canPrompt || ios ? (
         <button
           type="button"
           onClick={() => (canPrompt ? prompt() : dialogRef.current?.showModal())}
-          className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#0b0c24] transition hover:bg-white/90"
+          className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-white text-sm font-semibold text-ink-950 transition hover:bg-white/90"
         >
           {canPrompt ? t.install : t.howTo}
         </button>
       ) : (
-        <p className="mt-2 text-[11px] text-white/55">{t.openOnPhone}</p>
+        <p className="mt-2.5 text-[11px] text-white/45">{t.openOnPhone}</p>
       )}
       {ios && (
         <dialog
@@ -64,7 +69,7 @@ function InstallCard({ lang, compact }: { lang: Lang; compact?: boolean }) {
           onClick={(e) => {
             if (e.target === e.currentTarget) dialogRef.current?.close()
           }}
-          className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-white/15 bg-[#12142e]/95 p-6 text-left text-white shadow-[0_30px_80px_-20px_rgb(0_0_0/0.8)] backdrop:bg-[#05061a]/70 backdrop:backdrop-blur-sm"
+          className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-white/10 bg-ink-800/95 p-6 text-left text-white shadow-[0_30px_80px_-20px_rgb(0_0_0/0.8)] backdrop:bg-ink-950/70 backdrop:backdrop-blur-sm"
         >
           <div className="flex items-center gap-3">
             <img src="/apple-touch-icon.png" alt="" className="size-12 rounded-xl" />
@@ -96,32 +101,36 @@ function CoffeeCard({ lang, compact }: { lang: Lang; compact?: boolean }) {
       href={COFFEE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative block overflow-hidden rounded-3xl border border-amber-300/35 bg-linear-to-br from-amber-500/30 via-orange-500/20 to-pink-500/30 p-4 shadow-[0_18px_40px_-18px_rgb(251_146_60/0.6)] transition hover:border-amber-200/60"
+      className="group block rounded-2xl border border-amber-300/20 bg-linear-to-b from-amber-300/[0.09] to-amber-300/[0.02] p-3.5 transition hover:border-amber-300/40 focus-visible:ring-2 focus-visible:ring-amber-300/50 focus-visible:outline-none"
     >
-      <p aria-hidden className={`${compact ? 'text-2xl' : 'text-3xl'} transition group-hover:scale-110`}>
-        ☕
-      </p>
-      <p className="mt-1.5 font-semibold leading-snug">{t.coffeeTitle}</p>
-      {!compact && <p className="mt-1 text-xs text-pretty text-white/65">{t.coffeeSub}</p>}
-      <span className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-xl bg-amber-300 text-sm font-semibold text-[#2a1405] transition group-hover:bg-amber-200">
+      <span className="flex items-start gap-3">
+        <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-lg bg-amber-300/[0.16] text-amber-200 transition group-hover:-rotate-6">
+          <CoffeeIcon className="size-5" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm leading-snug font-semibold">{t.coffeeTitle}</span>
+          {!compact && <span className="mt-0.5 block text-xs text-pretty text-white/50">{t.coffeeSub}</span>}
+        </span>
+      </span>
+      <span className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-amber-300 text-sm font-semibold text-[#2a1405] transition group-hover:bg-amber-200">
         {t.coffee}
       </span>
     </a>
   )
 }
 
-/** "Install app" and "Buy me a coffee", stacked in the right rail or side by side on phones. */
+/** "Install app" and "Buy me a coffee": stacked in the sidebar, or side by side under the page on phones. */
 export function SupportCards({ lang, layout }: { lang: Lang; layout: 'rail' | 'row' }) {
   if (layout === 'rail') {
     return (
-      <div className="space-y-4">
-        <InstallCard lang={lang} />
+      <div className="space-y-3">
         <CoffeeCard lang={lang} />
+        <InstallCard lang={lang} />
       </div>
     )
   }
   return (
-    <div className="mt-6 grid w-full max-w-md grid-cols-2 gap-3 sm:max-w-xl [&>:only-child]:col-span-2">
+    <div className="mt-8 grid w-full max-w-md grid-cols-2 gap-3 sm:max-w-xl [&>:only-child]:col-span-2">
       <InstallCard lang={lang} compact />
       <CoffeeCard lang={lang} compact />
     </div>

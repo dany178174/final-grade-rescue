@@ -83,7 +83,7 @@ export default function StudyPlanPage({ params }: { params: URLSearchParams }) {
               <span
                 key={n}
                 className={`h-1.5 w-8 rounded-full transition ${
-                  n <= stepNumber ? 'bg-linear-to-r from-blue-400 via-purple-400 to-pink-400' : 'bg-white/15'
+                  n <= stepNumber ? 'bg-accent-400' : 'bg-white/15'
                 }`}
               />
             ))}

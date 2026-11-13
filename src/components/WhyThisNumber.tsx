@@ -124,7 +124,7 @@ export function WhyThisNumber({ label, score, current, desired, weight }: WhyPro
 
   return (
     <details className="group mt-3 text-left">
-      <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium text-white/60 transition hover:text-white focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+      <summary className="mx-auto flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-medium text-white/60 transition hover:text-white focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
         Why {label}?
         <svg
           aria-hidden

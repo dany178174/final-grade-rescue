@@ -169,7 +169,7 @@ export function FeedbackProvider({ children, lang = 'en' }: { children: ReactNod
           onClick={(e) => {
             if (e.target === e.currentTarget) close()
           }}
-          className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl border border-white/15 bg-[#12142e]/95 p-0 text-white shadow-[0_30px_80px_-20px_rgb(0_0_0/0.8)] backdrop:bg-[#05061a]/70 backdrop:backdrop-blur-sm"
+          className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl border border-white/15 bg-ink-800/95 p-0 text-white shadow-[0_30px_80px_-20px_rgb(0_0_0/0.8)] backdrop:bg-ink-950/70 backdrop:backdrop-blur-sm"
         >
           <div className="p-6 sm:p-7">
             {status === 'sent' ? (
@@ -200,7 +200,7 @@ export function FeedbackProvider({ children, lang = 'en' }: { children: ReactNod
                     type="button"
                     onClick={close}
                     aria-label={t.close}
-                    className="grid size-9 shrink-0 place-items-center rounded-xl text-white/60 transition hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none"
+                    className="grid size-9 shrink-0 place-items-center rounded-xl text-white/60 transition hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
                   >
                     ✕
                   </button>
@@ -217,9 +217,9 @@ export function FeedbackProvider({ children, lang = 'en' }: { children: ReactNod
                         aria-label={lang === 'vi' ? r.labelVi : r.label}
                         title={lang === 'vi' ? r.labelVi : r.label}
                         onClick={() => setRating(r.value)}
-                        className={`grid h-12 place-items-center rounded-2xl border text-2xl transition focus-visible:ring-4 focus-visible:ring-fuchsia-500/25 focus-visible:outline-none ${
+                        className={`grid h-12 place-items-center rounded-2xl border text-2xl transition focus-visible:ring-4 focus-visible:ring-accent-500/25 focus-visible:outline-none ${
                           rating === r.value
-                            ? 'scale-105 border-fuchsia-300/60 bg-white/[0.12]'
+                            ? 'scale-105 border-accent-300/60 bg-white/[0.12]'
                             : 'border-white/12 bg-white/[0.05] opacity-75 hover:opacity-100'
                         }`}
                       >
@@ -239,7 +239,7 @@ export function FeedbackProvider({ children, lang = 'en' }: { children: ReactNod
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={t.messagePlaceholder}
-                  className="w-full resize-y rounded-2xl border border-white/15 bg-white/[0.06] p-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+                  className="w-full resize-y rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
                 />
 
                 <label htmlFor="feedback-email" className="mt-4 mb-2 block text-sm font-medium text-white/85">
@@ -252,7 +252,7 @@ export function FeedbackProvider({ children, lang = 'en' }: { children: ReactNod
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="h-12 w-full rounded-2xl border border-white/15 bg-white/[0.06] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-fuchsia-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-fuchsia-500/20"
+                  className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-base text-white transition outline-none placeholder:text-white/30 hover:border-white/25 focus:border-accent-300/60 focus:bg-white/[0.09] focus:ring-4 focus:ring-accent-500/20"
                 />
 
                 {/* Honeypot: hidden from people, bots tick it and get filtered out. */}

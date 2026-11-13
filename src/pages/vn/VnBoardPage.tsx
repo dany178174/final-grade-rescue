@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowLeftIcon } from '../../components/icons'
+import { ArrowLeftIcon, ResetIcon, SparklesIcon } from '../../components/icons'
 import { BoardSheet, type SheetNeed } from '../../components/vn/BoardSheet'
 import { getVnSubject, levelOf, subjectsFor, VN_GRADES } from '../../data/vn/subjects'
 import { TIER_STYLES } from '../../lib/tierStyles'
@@ -110,15 +110,15 @@ function Check({ ok, label, detail }: { ok: boolean; label: string; detail?: str
 /** Segmented control used for the view switch and the term. */
 function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { id: T; label: string }[]; onChange: (id: T) => void }) {
   return (
-    <div role="group" aria-label={label} className="inline-flex rounded-xl border border-white/15 bg-black/20 p-0.5">
+    <div role="group" aria-label={label} className="inline-flex gap-1 rounded-xl border border-white/[0.08] bg-ink-900/70 p-1">
       {options.map((o) => (
         <button
           key={o.id}
           type="button"
           aria-pressed={value === o.id}
           onClick={() => onChange(o.id)}
-          className={`h-8 rounded-[0.6rem] px-3 text-xs font-semibold whitespace-nowrap transition ${
-            value === o.id ? 'bg-white/[0.16] text-white shadow-sm' : 'text-white/60 hover:text-white/85'
+          className={`h-8 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition focus-visible:ring-2 focus-visible:ring-accent-400/60 focus-visible:outline-none ${
+            value === o.id ? 'bg-white/[0.1] text-white shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)]' : 'text-white/55 hover:text-white/85'
           }`}
         >
           {o.label}
@@ -148,7 +148,7 @@ function ScoreCell({ cell, label, caption, onChange }: { cell: Cell; label: stri
         value={cell.v.replace('.', ',')}
         placeholder="–"
         onChange={(e) => onChange({ ...cell, v: sanitizeScoreInput(e.target.value) })}
-        className={`h-11 w-14 rounded-xl border bg-white/[0.06] text-center text-base font-medium text-white tabular-nums outline-none placeholder:text-white/25 focus:ring-4 focus:ring-fuchsia-500/20 ${border}`}
+        className={`h-11 w-14 rounded-xl border bg-white/[0.06] text-center text-base font-medium text-white tabular-nums outline-none placeholder:text-white/25 focus:ring-4 focus:ring-accent-500/20 ${border}`}
       />
       <button
         type="button"
@@ -257,7 +257,7 @@ function AverageChart({ items }: { items: { id: string; name: string; avg: numbe
             <li key={item.id} className="grid grid-cols-[5.5rem_1fr_2.5rem] items-center gap-3 text-sm" title={`${item.name}: ${formatAverage(item.avg)}`}>
               <span className="truncate text-white/75">{item.name}</span>
               <span className="relative h-2.5 rounded-full bg-white/10">
-                <span className="absolute inset-y-0 left-0 rounded-full bg-fuchsia-300" style={{ width: `${item.avg * 10}%` }} />
+                <span className="absolute inset-y-0 left-0 rounded-full bg-accent-300" style={{ width: `${item.avg * 10}%` }} />
                 {lines.map((l) => (
                   <span key={l.at} aria-hidden className="absolute -inset-y-1 w-px bg-white/35" style={{ left: `${l.at * 10}%` }} />
                 ))}
@@ -297,7 +297,7 @@ function NoticeBox({ notice }: { notice: Notice }) {
 }
 
 const textInput =
-  'h-11 w-full rounded-xl border border-white/15 bg-white/[0.06] px-3.5 text-base text-white outline-none placeholder:text-white/30 focus:border-fuchsia-300/60 focus:ring-4 focus:ring-fuchsia-500/20'
+  'h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 text-base text-white outline-none placeholder:text-white/30 hover:border-white/20 focus:border-accent-300/60 focus:ring-4 focus:ring-accent-500/20'
 
 export default function VnBoardPage() {
   const [board, setBoard] = useState<Board>(loadBoard)
@@ -410,7 +410,7 @@ export default function VnBoardPage() {
       ? { text: '🏆 Học sinh Xuất sắc', cls: 'border-amber-300/40 bg-amber-300/15 text-amber-200' }
       : ov.title === 'gioi'
         ? { text: '🥇 Học sinh Giỏi', cls: 'border-emerald-300/40 bg-emerald-400/15 text-emerald-200' }
-        : { text: 'Chưa đạt danh hiệu', cls: 'border-white/15 bg-white/[0.06] text-white/70' }
+        : { text: 'Chưa đạt danh hiệu', cls: 'border-white/10 bg-white/[0.04] text-white/70' }
 
   return (
     <main className="w-full max-w-4xl">
@@ -421,14 +421,13 @@ export default function VnBoardPage() {
         </a>
       </nav>
 
-      <header className="glass-card relative mb-4 overflow-hidden p-6 sm:mb-5 sm:p-8">
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent" />
-        <div className="relative">
-          <p className="text-xs font-semibold tracking-[0.14em] text-fuchsia-200/80 uppercase">📊 Bảng điểm tổng quát</p>
-          <h1 className="mt-2 text-2xl leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
+      <header className="mb-6 px-1 sm:mb-8">
+        <div>
+          <p className="inline-flex items-center rounded-full border border-accent-300/20 bg-accent-500/10 px-2.5 py-1 text-[11px] font-semibold tracking-[0.1em] text-accent-200 uppercase">Bảng điểm tổng quát</p>
+          <h1 className="mt-3 text-[1.75rem] leading-tight font-semibold tracking-tight text-balance sm:text-4xl">
             Bảng kế hoạch của lớp, ngay trên web
           </h1>
-          <p className="mt-2 text-sm text-pretty text-white/65 sm:text-base">
+          <p className="mt-3 max-w-2xl text-sm text-pretty text-white/60 sm:text-base">
             Giống hệt file Excel kế hoạch học kì: gõ điểm vào ô vàng (đã chốt) và ô xanh (phấn đấu), TBHK tự tính. Web còn
             xếp loại học tập và chỉ ra môn nào cần bao nhiêu điểm để đạt Học sinh Giỏi hay Học sinh Xuất sắc (theo Thông tư
             22). Không cần mở Excel.
@@ -437,35 +436,34 @@ export default function VnBoardPage() {
       </header>
 
       <div className="space-y-4 sm:space-y-5">
-        <section aria-labelledby="sheet-title" className="glass-card relative overflow-hidden p-4 sm:p-7">
-          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-linear-to-br from-emerald-400/[0.1] via-transparent to-sky-400/[0.08]" />
-          <div className="relative">
+        <section aria-labelledby="sheet-title" className="glass-card p-4 sm:p-7">
+          <div>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 id="sheet-title" className="flex items-center gap-2 text-lg font-semibold tracking-tight sm:text-xl">
-                  <span aria-hidden>📗</span> Kế hoạch {isYear ? 'học kì II' : 'học kì I'}
+                <h2 id="sheet-title" className="text-lg font-semibold tracking-tight sm:text-xl">
+                  Kế hoạch {isYear ? 'học kì II' : 'học kì I'}
                 </h2>
-                <p className="mt-0.5 text-sm text-pretty text-white/55">Điểm và họ tên chỉ lưu trên máy của bạn.</p>
+                <p className="mt-0.5 text-sm text-pretty text-white/50">Điểm và họ tên chỉ lưu trên máy của bạn.</p>
               </div>
               <Segmented
                 label="Kiểu hiển thị"
                 value={view}
                 onChange={chooseView}
                 options={[
-                  { id: 'sheet', label: '▦ Dạng bảng' },
-                  { id: 'cards', label: '▤ Dạng thẻ' },
+                  { id: 'sheet', label: 'Dạng bảng' },
+                  { id: 'cards', label: 'Dạng thẻ' },
                 ]}
               />
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-[10rem_auto_1fr]">
               <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-white/65">Lớp</span>
+                <span className="mb-1.5 block text-xs font-medium text-white/55">Lớp</span>
                 <span className="relative block">
                   <select
                     value={board.grade}
                     onChange={(e) => chooseGrade(Number(e.target.value))}
-                    className="h-11 w-full appearance-none rounded-xl border border-white/15 bg-white/[0.06] pr-8 pl-3.5 text-base font-semibold text-white outline-none focus:border-fuchsia-300/60 focus:ring-4 focus:ring-fuchsia-500/20"
+                    className="h-11 w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] pr-8 pl-3.5 text-base font-semibold text-white outline-none hover:border-white/20 focus:border-accent-300/60 focus:ring-4 focus:ring-accent-500/20"
                   >
                     {VN_GRADES.map(({ grade, level }) => (
                       <option key={grade} value={grade}>
@@ -479,23 +477,25 @@ export default function VnBoardPage() {
                 </span>
               </label>
               <div>
-                <span className="mb-1.5 block text-xs font-medium text-white/65">Đang tính</span>
+                <span className="mb-1.5 block text-xs font-medium text-white/55">Đang tính</span>
                 <div className="flex h-11 items-center">
                   <Segmented label="Học kì" value={board.term} onChange={(term) => set({ term })} options={TERMS} />
                 </div>
               </div>
               <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-white/65">Họ và tên</span>
+                <span className="mb-1.5 block text-xs font-medium text-white/55">Họ và tên</span>
                 <input value={board.name ?? ''} maxLength={60} onChange={(e) => set({ name: e.target.value })} placeholder="VD: Nguyễn Văn A" className={textInput} />
               </label>
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-4">
               <button type="button" onClick={autoFill} disabled={!board.rows.length} className={`${primaryButton} h-11`}>
-                ✨ Tự điền ô xanh theo mục tiêu {board.goal === 'hsxs' ? 'HSXS' : 'HSG'}
+                <SparklesIcon className="size-4" />
+                Tự điền ô xanh theo mục tiêu {board.goal === 'hsxs' ? 'HSXS' : 'HSG'}
               </button>
-              <button type="button" onClick={() => setBoard({ ...board, grade: 10, term: 'hk1', rows: exampleRows() })} className={`${secondaryButton} h-11`}>
-                📋 Xem bảng mẫu
+              <span className="hidden flex-1 sm:block" />
+              <button type="button" onClick={() => setBoard({ ...board, grade: 10, term: 'hk1', rows: exampleRows() })} className={`${smallButton} h-11 px-4 text-sm`}>
+                Xem bảng mẫu
               </button>
               <button
                 type="button"
@@ -503,9 +503,10 @@ export default function VnBoardPage() {
                   setBoard({ ...board, rows: templateRows(board.grade) })
                   setNotice(null)
                 }}
-                className={`${secondaryButton} h-11`}
+                className={`${smallButton} h-11 px-4 text-sm`}
               >
-                🧹 Xóa hết điểm
+                <ResetIcon className="size-4" />
+                Xóa hết điểm
               </button>
             </div>
             {notice?.at === 'sheet' && (
@@ -568,7 +569,7 @@ export default function VnBoardPage() {
                                   maxLength={40}
                                   onChange={(e) => setRow(row.id, { khac: e.target.value })}
                                   placeholder="Tên môn"
-                                  className="mt-1 h-9 w-40 rounded-lg border border-white/15 bg-white/[0.06] px-2.5 text-sm text-white outline-none"
+                                  className="mt-1 h-9 w-40 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 text-sm text-white outline-none"
                                 />
                               )}
                             </div>
@@ -576,7 +577,7 @@ export default function VnBoardPage() {
                               <p className="text-[11px] tracking-wide text-white/50 uppercase">{isYear ? 'HK II / Cả năm' : 'TBHK'}</p>
                               <p className="text-2xl font-bold tabular-nums">
                                 {stats.termAvg === null ? '–' : formatAverage(stats.termAvg)}
-                                {isYear && stats.yearAvg !== null && <span className="text-base font-semibold text-fuchsia-200"> / {formatAverage(stats.yearAvg)}</span>}
+                                {isYear && stats.yearAvg !== null && <span className="text-base font-semibold text-accent-200"> / {formatAverage(stats.yearAvg)}</span>}
                               </p>
                             </div>
                           </div>
@@ -632,7 +633,7 @@ export default function VnBoardPage() {
                                     value={row.hk1.replace('.', ',')}
                                     placeholder="–"
                                     onChange={(e) => setRow(row.id, { hk1: sanitizeScoreInput(e.target.value) })}
-                                    className="h-11 w-16 rounded-xl border border-sky-300/50 bg-sky-400/[0.08] text-center text-base font-medium text-white tabular-nums outline-none focus:ring-4 focus:ring-fuchsia-500/20"
+                                    className="h-11 w-16 rounded-xl border border-sky-300/50 bg-sky-400/[0.08] text-center text-base font-medium text-white tabular-nums outline-none focus:ring-4 focus:ring-accent-500/20"
                                   />
                                 </div>
                               )}
@@ -728,11 +729,11 @@ export default function VnBoardPage() {
           )}
           <div className="mt-5 space-y-2 border-t border-white/10 pt-4 text-sm text-white/80">
             <label className="flex items-start gap-2.5">
-              <input type="checkbox" checked={board.conductOk} onChange={(e) => set({ conductOk: e.target.checked })} className="mt-0.5 size-4 accent-fuchsia-400" />
+              <input type="checkbox" checked={board.conductOk} onChange={(e) => set({ conductOk: e.target.checked })} className="mt-0.5 size-4 accent-accent-400" />
               Kết quả rèn luyện (hạnh kiểm) dự kiến mức Tốt
             </label>
             <label className="flex items-start gap-2.5">
-              <input type="checkbox" checked={board.commentsOk} onChange={(e) => set({ commentsOk: e.target.checked })} className="mt-0.5 size-4 accent-fuchsia-400" />
+              <input type="checkbox" checked={board.commentsOk} onChange={(e) => set({ commentsOk: e.target.checked })} className="mt-0.5 size-4 accent-accent-400" />
               Các môn đánh giá bằng nhận xét (GDTC, Nghệ thuật, HĐTN, GD địa phương) đều Đạt
             </label>
           </div>
@@ -760,7 +761,7 @@ export default function VnBoardPage() {
                       <span className="font-semibold">
                         {getVnSubject(row.mon)?.emoji} {nameOf(row)}
                       </span>
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${p.top ? 'bg-fuchsia-400/15 text-fuchsia-200' : 'bg-white/[0.08] text-white/60'}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${p.top ? 'bg-accent-400/15 text-accent-200' : 'bg-white/[0.08] text-white/60'}`}>
                         Mục tiêu ≥ {formatAverage(p.target)}
                       </span>
                     </div>
@@ -772,7 +773,7 @@ export default function VnBoardPage() {
           </Card>
         )}
 
-        <Card title="📎 Cần nộp file Excel cho lớp?" sub="Không bắt buộc. Tải bảng ở trên thành file đúng mẫu (có công thức TBHK), hoặc mở file cũ để đọc điểm vào bảng.">
+        <Card title="Cần nộp file Excel cho lớp?" sub="Không bắt buộc. Tải bảng ở trên thành file đúng mẫu (có công thức TBHK), hoặc mở file cũ để đọc điểm vào bảng.">
           <div className="grid gap-2.5 sm:grid-cols-[1fr_1fr_12rem]">
             <button
               type="button"
@@ -780,11 +781,11 @@ export default function VnBoardPage() {
               disabled={!board.rows.length}
               className={`${secondaryButton} h-auto flex-col gap-0.5 border-emerald-300/40 py-3`}
             >
-              <span className="text-base">⬇ Tải file Excel</span>
+              <span className="text-base">Tải file Excel</span>
               <span className="text-[11px] font-normal text-white/55">Đúng mẫu kế hoạch của lớp</span>
             </button>
             <button type="button" onClick={() => fileRef.current?.click()} className={`${secondaryButton} h-auto flex-col gap-0.5 py-3`}>
-              <span className="text-base">📂 Mở file Excel</span>
+              <span className="text-base">Mở file Excel</span>
               <span className="text-[11px] font-normal text-white/55">Đọc điểm và màu vàng/xanh</span>
             </button>
             <label className="block">

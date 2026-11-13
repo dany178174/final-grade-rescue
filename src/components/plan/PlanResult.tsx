@@ -151,10 +151,10 @@ export function PlanResult(props: PlanResultProps) {
             <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-semibold ${tierStyle.badge}`}>
               <span aria-hidden>{plan.emoji}</span> {plan.mode} mode
             </span>
-            <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-white/75">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-white/75">
               <span aria-hidden>{subject.emoji}</span> {subjectName}
             </span>
-            <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-white/75">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-white/75">
               <span aria-hidden>{styleInfo.emoji}</span> {styleInfo.label}
             </span>
           </div>
@@ -193,7 +193,7 @@ export function PlanResult(props: PlanResultProps) {
         <ol className="space-y-3">
           {plan.strategy.map((item, i) => (
             <li key={item} className="flex gap-3.5 text-sm text-white/80 sm:text-base">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 text-xs font-bold">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent-500 text-xs font-bold">
                 {i + 1}
               </span>
               <span className="pt-0.5 text-pretty">{item}</span>
@@ -203,7 +203,7 @@ export function PlanResult(props: PlanResultProps) {
       </Section>
 
       <Section emoji="🗓️" title="Day-by-day schedule" sub={`Built for ${daysLabel.toLowerCase()}. Steps marked ${styleInfo.emoji} use your ${styleInfo.label} resources below.`}>
-        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-white/80">
+        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80">
           ⏱️ Daily target: <span className="font-semibold text-white">{plan.hours}</span>
         </p>
         <Timeline phases={SCHEDULES[daysId]} actions={scheduleActions} styleEmoji={styleInfo.emoji} />
@@ -287,7 +287,7 @@ function PlanFeedback() {
             aria-label={r.label}
             title={r.label}
             onClick={() => feedback.open(r.value)}
-            className="grid size-11 place-items-center rounded-2xl border border-white/12 bg-white/[0.05] text-2xl transition hover:scale-110 hover:bg-white/[0.1] focus-visible:ring-4 focus-visible:ring-fuchsia-500/25 focus-visible:outline-none"
+            className="grid size-11 place-items-center rounded-2xl border border-white/12 bg-white/[0.05] text-2xl transition hover:scale-110 hover:bg-white/[0.1] focus-visible:ring-4 focus-visible:ring-accent-500/25 focus-visible:outline-none"
           >
             {r.emoji}
           </button>
@@ -356,10 +356,10 @@ export function Timeline({
         <li key={phase.when} className="relative">
           <span
             aria-hidden
-            className="absolute top-1 -left-[1.95rem] size-3.5 rounded-full border-2 border-fuchsia-300 bg-[#0b0c24] shadow-[0_0_12px_rgb(240_171_252/0.6)]"
+            className="absolute top-1 -left-[1.95rem] size-3.5 rounded-full border-2 border-accent-300 bg-ink-950 shadow-[0_0_12px_rgb(240_171_252/0.6)]"
           />
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-white/[0.08] px-2.5 py-0.5 text-xs font-semibold text-fuchsia-200">
+            <span className="rounded-full bg-white/[0.08] px-2.5 py-0.5 text-xs font-semibold text-accent-200">
               {phase.when}
             </span>
             <h3 className="font-semibold">{phase.title}</h3>

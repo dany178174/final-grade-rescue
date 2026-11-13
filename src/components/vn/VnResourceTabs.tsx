@@ -52,19 +52,19 @@ export function VnResourceTabs({ subject, subjectName, grade, topic, examShort, 
               aria-selected={selected}
               aria-controls={`vn-panel-${id}`}
               onClick={() => setActive(id)}
-              className={`relative flex flex-col items-center justify-center gap-0.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none sm:flex-row sm:gap-2 ${
+              className={`relative flex flex-col items-center justify-center gap-0.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none sm:flex-row sm:gap-2 ${
                 selected ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/55 hover:text-white/85'
               }`}
             >
               <span aria-hidden>{style.emoji}</span>
               <span>{style.label}</span>
-              {id === preferred && <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-fuchsia-300" />}
+              {id === preferred && <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-accent-300" />}
             </button>
           )
         })}
       </div>
       <p className="mt-2 text-center text-xs text-white/45">
-        <span className="mr-1 inline-block size-1.5 rounded-full bg-fuchsia-300 align-middle" /> Cách học bạn chọn
+        <span className="mr-1 inline-block size-1.5 rounded-full bg-accent-300 align-middle" /> Cách học bạn chọn
       </p>
 
       <div id={`vn-panel-${active}`} role="tabpanel" aria-labelledby={`vn-tab-${active}`} className="mt-6">
@@ -162,7 +162,7 @@ function ReadingPanel({ subject, subjectName, grade, topic }: { subject: VnSubje
 function PromptCard({ prompt, highlight }: { prompt: PromptTemplate; highlight?: boolean }) {
   const [expanded, setExpanded] = useState(false)
   return (
-    <li className={`rounded-2xl border p-4 ${highlight ? 'border-fuchsia-300/30 bg-fuchsia-400/[0.06]' : 'border-white/10 bg-white/[0.04]'}`}>
+    <li className={`rounded-2xl border p-4 ${highlight ? 'border-accent-300/30 bg-accent-400/[0.06]' : 'border-white/10 bg-white/[0.04]'}`}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-semibold">{prompt.title}</p>
@@ -177,7 +177,7 @@ function PromptCard({ prompt, highlight }: { prompt: PromptTemplate; highlight?:
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
-        className="mt-2 rounded-md text-xs font-medium text-fuchsia-200/80 transition hover:text-fuchsia-100 focus-visible:ring-2 focus-visible:ring-fuchsia-400/50 focus-visible:outline-none"
+        className="mt-2 rounded-md text-xs font-medium text-accent-200/80 transition hover:text-accent-100 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
       >
         {expanded ? 'Thu gọn' : 'Xem toàn bộ câu lệnh'}
       </button>
@@ -206,7 +206,7 @@ function AiPanel({ subject, topic, promptContext }: { subject: VnSubject; topic?
           {VN_PROMPT_FORMULA.map((item, i) => (
             <li key={item.part} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <div className="flex items-center gap-2.5">
-                <span className="grid size-7 place-items-center rounded-lg bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 text-xs font-bold">
+                <span className="grid size-7 place-items-center rounded-lg bg-accent-500 text-xs font-bold">
                   {i + 1}
                 </span>
                 <span className="font-semibold">{item.part}</span>

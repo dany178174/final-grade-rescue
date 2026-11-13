@@ -80,10 +80,10 @@ export function VnPlanResult(props: VnPlanResultProps) {
             <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-semibold ${tierStyle.badge}`}>
               <span aria-hidden>{plan.emoji}</span> Chế độ {plan.mode}
             </span>
-            <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-white/75">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-white/75">
               <span aria-hidden>{subject.emoji}</span> {subjectName} lớp {grade}
             </span>
-            <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-white/75">
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-white/75">
               <span aria-hidden>{styleInfo.emoji}</span> {styleInfo.label}
             </span>
           </div>
@@ -130,7 +130,7 @@ export function VnPlanResult(props: VnPlanResultProps) {
         <ol className="space-y-3">
           {plan.strategy.map((item, i) => (
             <li key={item} className="flex gap-3.5 text-sm text-white/80 sm:text-base">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 text-xs font-bold">
+              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent-500 text-xs font-bold">
                 {i + 1}
               </span>
               <span className="pt-0.5 text-pretty">{item}</span>
@@ -144,7 +144,7 @@ export function VnPlanResult(props: VnPlanResultProps) {
         title="Lịch ôn từng ngày"
         sub={`Chia cho ${daysLabel.toLowerCase()}. Những việc có biểu tượng ${styleInfo.emoji} dùng tài liệu "${styleInfo.label}" bên dưới.`}
       >
-        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-white/80">
+        <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80">
           ⏱️ Mỗi ngày: <span className="font-semibold text-white">{plan.hours}</span>
         </p>
         <Timeline phases={VN_SCHEDULES[daysId]} actions={scheduleActions} styleEmoji={styleInfo.emoji} />
@@ -247,7 +247,7 @@ function VnPlanFeedback() {
             aria-label={r.labelVi}
             title={r.labelVi}
             onClick={() => feedback.open(r.value)}
-            className="grid size-11 place-items-center rounded-2xl border border-white/12 bg-white/[0.05] text-2xl transition hover:scale-110 hover:bg-white/[0.1] focus-visible:ring-4 focus-visible:ring-fuchsia-500/25 focus-visible:outline-none"
+            className="grid size-11 place-items-center rounded-2xl border border-white/12 bg-white/[0.05] text-2xl transition hover:scale-110 hover:bg-white/[0.1] focus-visible:ring-4 focus-visible:ring-accent-500/25 focus-visible:outline-none"
           >
             {r.emoji}
           </button>
