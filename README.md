@@ -36,6 +36,16 @@ Required = (Desired − Current × (1 − Weight / 100)) / (Weight / 100)
 
 The score is rounded to two decimals before the tier is picked, so the color always matches the number on screen.
 
+## Vietnamese section (`#/vn`)
+
+A fully Vietnamese version for students in Vietnam, following Chương trình GDPT 2018 and Thông tư 22/2021:
+
+- **Calculator (`#/vn`)**: 0–10 scores written the Vietnamese way (9,8). Semester mode uses `ĐTB = (tổng ĐGTX + 2 × giữa kì + 3 × cuối kì) ÷ (số ĐGTX + 5)` with 2–4 regular assessments (miệng, 15 phút); year mode uses `(HK I + 2 × HK II) ÷ 3`. Students fill in the scores they have, leave the rest blank, and see the average score they need on what's left, with a step-by-step explanation.
+- **Study plan (`#/vn/ke-hoach`)**: grade 6–12 and the scored subjects for THCS or THPT, learning style and time left. Videos are YouTube searches in Vietnamese tuned to subject, grade, topic and the upcoming test; reading links go to Vietnamese e-textbooks, solution sites and news; AI prompts and the prompt-writing lesson are in Vietnamese.
+- **Flashcards (`#/vn/the-ghi-nho`)**: the Flashcard Maker in Vietnamese.
+
+Logic lives in `src/lib/vnGrade.ts`; content in `src/data/vn/`; pages in `src/pages/vn/` and `src/components/vn/`.
+
 ## Pages
 
 The app uses hash routes, so it runs on any static host with no server config:

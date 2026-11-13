@@ -6,6 +6,7 @@ import {
   STYLE_ACTIONS,
   TIER_PLANS,
   type DaysId,
+  type SchedulePhase,
   type LearningStyle,
 } from '../../data/plan'
 import type { PromptContext } from '../../data/prompts'
@@ -36,7 +37,7 @@ export type PlanResultProps = {
   onEdit: () => void
 }
 
-function Section({ emoji, title, sub, children }: { emoji: string; title: string; sub?: string; children: ReactNode }) {
+export function Section({ emoji, title, sub, children }: { emoji: string; title: string; sub?: string; children: ReactNode }) {
   return (
     <section className="glass-card p-5 sm:p-8">
       <h2 className="flex items-start gap-2.5 text-lg leading-snug font-semibold tracking-tight sm:text-xl">
@@ -49,7 +50,7 @@ function Section({ emoji, title, sub, children }: { emoji: string; title: string
   )
 }
 
-function Stat({ label, value, valueClass = 'text-white' }: { label: string; value: string; valueClass?: string }) {
+export function Stat({ label, value, valueClass = 'text-white' }: { label: string; value: string; valueClass?: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-black/20 p-3.5">
       <dt className="text-[11px] font-medium tracking-wide text-white/50 uppercase">{label}</dt>
@@ -58,7 +59,15 @@ function Stat({ label, value, valueClass = 'text-white' }: { label: string; valu
   )
 }
 
-function ShareButton() {
+export function ShareButton({
+  title = 'My final exam study plan',
+  label = 'Share plan',
+  copiedLabel = 'Link copied!',
+}: {
+  title?: string
+  label?: string
+  copiedLabel?: string
+}) {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -71,7 +80,7 @@ function ShareButton() {
     const url = window.location.href
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'My final exam study plan', url })
+        await navigator.share({ title, url })
       } catch {
         // The share sheet was closed; nothing to do.
       }
@@ -83,7 +92,7 @@ function ShareButton() {
   return (
     <button type="button" onClick={share} className={smallButton}>
       {copied ? <CheckIcon className="size-3.5" /> : <ShareIcon className="size-3.5" />}
-      {copied ? 'Link copied!' : 'Share plan'}
+      {copied ? copiedLabel : label}
     </button>
   )
 }
@@ -299,12 +308,22 @@ function ScenarioTable({ current, desired, weight }: { current: number; desired:
 }
 
 function Schedule({ daysId, style }: { daysId: DaysId; style: LearningStyle }) {
-  const actions = STYLE_ACTIONS[style]
-  const styleEmoji = LEARNING_STYLES[style].emoji
+  return <Timeline phases={SCHEDULES[daysId]} actions={STYLE_ACTIONS[style]} styleEmoji={LEARNING_STYLES[style].emoji} />
+}
 
+/** A vertical schedule. Tasks written as {learn} or {review} become the learner's style-specific actions. */
+export function Timeline({
+  phases,
+  actions,
+  styleEmoji,
+}: {
+  phases: SchedulePhase[]
+  actions: { learn: string; review: string }
+  styleEmoji: string
+}) {
   return (
     <ol className="relative ml-1.5 space-y-6 border-l border-white/15 pl-6">
-      {SCHEDULES[daysId].map((phase) => (
+      {phases.map((phase) => (
         <li key={phase.when} className="relative">
           <span
             aria-hidden

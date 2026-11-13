@@ -7,6 +7,15 @@ export type ResourceKind =
   | 'Study guide'
   | 'Practice'
   | 'Tool'
+  // Vietnamese section
+  | 'Kênh'
+  | 'Khóa học'
+  | 'SGK điện tử'
+  | 'Lời giải'
+  | 'Luyện tập'
+  | 'Báo'
+  | 'Tra cứu'
+  | 'Công cụ'
 
 export type Resource = {
   title: string

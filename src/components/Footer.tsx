@@ -13,26 +13,36 @@ function Dot() {
   )
 }
 
-export function Footer() {
+const COPY = {
+  en: { tagline: 'Built to save your GPA.', flashcards: 'Flashcard maker', feedback: 'Feedback', coffee: 'Buy me a coffee ☕', switchLabel: '🇻🇳 Học sinh Việt Nam', switchHref: '#/vn' },
+  vi: { tagline: 'Được làm ra để cứu điểm cho bạn.', flashcards: 'Tạo thẻ ghi nhớ', feedback: 'Góp ý', coffee: 'Mời mình ly cà phê ☕', switchLabel: '🇺🇸 US grading (English)', switchHref: '#/' },
+}
+
+export function Footer({ lang = 'en' }: { lang?: 'en' | 'vi' }) {
   const feedback = useFeedback()
+  const t = COPY[lang]
   return (
     <footer className="mt-8 flex flex-col items-center gap-2 text-sm text-white/55">
-      <p>Built to save your GPA.</p>
+      <p>{t.tagline}</p>
       <nav aria-label="More" className="flex flex-col items-center gap-1.5 sm:flex-row sm:gap-3">
-        <a href="#/flashcards" className={linkClass}>
-          Flashcard maker
+        <a href={t.switchHref} lang={lang === 'vi' ? 'en' : 'vi'} className={linkClass}>
+          {t.switchLabel}
+        </a>
+        <Dot />
+        <a href={lang === 'vi' ? '#/vn/the-ghi-nho' : '#/flashcards'} className={linkClass}>
+          {t.flashcards}
         </a>
         {feedback.enabled && (
           <>
             <Dot />
             <button type="button" onClick={() => feedback.open()} className={linkClass}>
-              Feedback
+              {t.feedback}
             </button>
           </>
         )}
         <Dot />
         <a href={BUY_ME_A_COFFEE_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>
-          Buy me a coffee ☕
+          {t.coffee}
         </a>
       </nav>
     </footer>

@@ -67,6 +67,13 @@ export function CalculatorPage({ inputs, setInputs }: CalculatorPageProps) {
       />
 
       <header className="relative mb-7 flex flex-col items-center text-center lg:mb-9">
+        <a
+          href="#/vn"
+          lang="vi"
+          className="mb-5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-xs font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+        >
+          🇻🇳 Học sinh Việt Nam? Dùng thang điểm 10 →
+        </a>
         <div className="mb-4 grid size-12 place-items-center rounded-2xl border border-white/15 bg-linear-to-br from-blue-500/30 via-purple-500/25 to-pink-500/30 shadow-lg shadow-purple-950/40">
           <LifebuoyIcon className="size-6 text-white" />
         </div>

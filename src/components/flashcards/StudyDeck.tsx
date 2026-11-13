@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Card } from '../../lib/flashcards'
+import { EN_DECK_LABELS, type DeckLabels } from './deckLabels'
 import { primaryButton, secondaryButton, smallButton } from '../../lib/ui'
 import { ArrowLeftIcon, ArrowRightIcon, ResetIcon } from '../icons'
 
@@ -14,7 +15,7 @@ function shuffled(indices: number[]): number[] {
 
 const range = (n: number) => Array.from({ length: n }, (_, i) => i)
 
-export function StudyDeck({ cards }: { cards: Card[] }) {
+export function StudyDeck({ cards, labels = EN_DECK_LABELS }: { cards: Card[]; labels?: DeckLabels }) {
   const [order, setOrder] = useState<number[]>(() => range(cards.length))
   const [position, setPosition] = useState(0)
   const [flipped, setFlipped] = useState(false)
@@ -86,7 +87,7 @@ export function StudyDeck({ cards }: { cards: Card[] }) {
     <div>
       <div className="mb-3 flex items-center justify-between gap-3 text-xs text-white/55">
         <span className="tabular-nums">
-          {finished ? 'Done!' : `Card ${position + 1} of ${order.length}`}
+          {finished ? labels.done : labels.card(position + 1, order.length)}
         </span>
         <span className="flex items-center gap-3 tabular-nums">
           <span className="text-emerald-300">✓ {known.size}</span>
@@ -105,20 +106,20 @@ export function StudyDeck({ cards }: { cards: Card[] }) {
           <button
             type="button"
             onClick={() => setFlipped((f) => !f)}
-            aria-label={flipped ? `Definition: ${card.definition}. Tap to show the term.` : `Term: ${card.term}. Tap to show the definition.`}
+            aria-label={flipped ? labels.showTerm(card.definition) : labels.showDefinition(card.term)}
             className="flip-card block h-64 w-full rounded-3xl text-left focus-visible:ring-4 focus-visible:ring-fuchsia-500/30 focus-visible:outline-none sm:h-72"
           >
             <span className="flip-card-inner block" data-flipped={flipped}>
               <span className="flip-card-face flex flex-col rounded-3xl border border-white/15 bg-[#161a3d] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
-                <span className="text-[11px] font-semibold tracking-[0.14em] text-sky-200/70 uppercase">Term</span>
+                <span className="text-[11px] font-semibold tracking-[0.14em] text-sky-200/70 uppercase">{labels.term}</span>
                 <span className="flex flex-1 items-center justify-center overflow-auto py-3 text-center text-2xl leading-snug font-semibold text-balance sm:text-3xl">
                   {card.term}
                 </span>
-                <span className="text-center text-xs text-white/40">Tap or press space to flip</span>
+                <span className="text-center text-xs text-white/40">{labels.tapHint}</span>
               </span>
               <span className="flip-card-face flip-card-back flex flex-col rounded-3xl border border-fuchsia-300/25 bg-[#211a42] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
                 <span className="text-[11px] font-semibold tracking-[0.14em] text-fuchsia-200/70 uppercase">
-                  Definition
+                  {labels.definition}
                 </span>
                 <span className="flex flex-1 items-center justify-center overflow-auto py-3 text-center text-lg leading-relaxed text-pretty text-white/90 sm:text-xl">
                   {card.definition}
@@ -134,27 +135,27 @@ export function StudyDeck({ cards }: { cards: Card[] }) {
               onClick={() => mark(false)}
               className={`${secondaryButton} border-orange-300/30 text-orange-200 hover:border-orange-300/50`}
             >
-              ↻ Still learning
+              {labels.stillLearning}
             </button>
             <button
               type="button"
               onClick={() => mark(true)}
               className={`${secondaryButton} border-emerald-300/30 text-emerald-200 hover:border-emerald-300/50`}
             >
-              ✓ Got it
+              {labels.gotIt}
             </button>
           </div>
 
           <div className="mt-3 flex items-center justify-between gap-2">
-            <button type="button" onClick={() => goTo(position - 1)} disabled={position === 0} className={`${smallButton} disabled:opacity-40`} aria-label="Previous card">
+            <button type="button" onClick={() => goTo(position - 1)} disabled={position === 0} className={`${smallButton} disabled:opacity-40`} aria-label={labels.prevAria}>
               <ArrowLeftIcon className="size-3.5" />
-              Prev
+              {labels.prev}
             </button>
             <button type="button" onClick={() => restart(shuffled(order))} className={smallButton}>
-              🔀 Shuffle
+              {labels.shuffle}
             </button>
-            <button type="button" onClick={() => goTo(position + 1)} className={smallButton} aria-label="Next card">
-              Next
+            <button type="button" onClick={() => goTo(position + 1)} className={smallButton} aria-label={labels.nextAria}>
+              {labels.next}
               <ArrowRightIcon className="size-3.5" />
             </button>
           </div>
@@ -165,22 +166,22 @@ export function StudyDeck({ cards }: { cards: Card[] }) {
             {learning.size === 0 ? '🎉' : '💪'}
           </p>
           <p className="mt-3 text-xl font-semibold">
-            You know {known.size} of {order.length} cards
+            {labels.summary(known.size, order.length)}
           </p>
           <p className="mt-1 text-sm text-white/60">
             {learning.size === 0
-              ? 'Every card marked as known. Come back tomorrow to lock it in.'
-              : `Go again on the ${learning.size} you're still learning. Repetition is what makes them stick.`}
+              ? labels.allKnown
+              : labels.goAgain(learning.size)}
           </p>
           <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
             {learning.size > 0 && (
               <button type="button" onClick={() => restart(shuffled([...learning]))} className={primaryButton}>
-                Study the {learning.size} I missed
+                {labels.studyMissed(learning.size)}
               </button>
             )}
             <button type="button" onClick={() => restart(range(cards.length))} className={secondaryButton}>
               <ResetIcon className="size-4" />
-              Start over
+              {labels.startOver}
             </button>
           </div>
         </div>

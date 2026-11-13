@@ -1,52 +1,83 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
 import { FeedbackProvider } from './components/feedback/FeedbackProvider'
 import { Footer } from './components/Footer'
 import { MeshBackground } from './components/MeshBackground'
 import { inputsFromParams, type GradeInputs } from './lib/grade'
-import { parseHash, useHashRoute } from './lib/router'
+import { parseHash, useHashRoute, type Route } from './lib/router'
+import { vnInputsFromParams, type VnInputs } from './lib/vnGrade'
 import { CalculatorPage } from './pages/CalculatorPage'
 
-// The plan and flashcard pages carry most of the content, so they load only when opened.
+// Everything except the US calculator loads only when opened.
 const StudyPlanPage = lazy(() => import('./pages/StudyPlanPage'))
 const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'))
 const InboxPage = lazy(() => import('./pages/InboxPage'))
+const VnCalculatorPage = lazy(() => import('./pages/vn/VnCalculatorPage').then((m) => ({ default: m.VnCalculatorPage })))
+const VnPlanPage = lazy(() => import('./pages/vn/VnPlanPage'))
+
+const isVietnamese = (path: string) => path === '/vn' || path.startsWith('/vn/')
 
 export default function App() {
   const route = useHashRoute()
-  // Numbers from a shared link (e.g. #/plan?c=86&d=90&w=30) prefill the calculator.
+  // Numbers from a shared link (e.g. #/plan?c=86&d=90&w=30 or #/vn?n=3&gk=7) prefill the calculators.
   const [inputs, setInputs] = useState<GradeInputs>(() => inputsFromParams(parseHash().params))
+  const [vnInputs, setVnInputs] = useState<VnInputs>(() => vnInputsFromParams(parseHash().params))
+  const vn = isVietnamese(route.path)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [route.path])
 
+  useEffect(() => {
+    document.documentElement.lang = vn ? 'vi' : 'en'
+    document.title = vn ? 'Máy tính Cứu Điểm cho học sinh Việt Nam' : 'Final Grade Rescue Calculator'
+  }, [vn])
+
   return (
-    <FeedbackProvider>
+    <FeedbackProvider lang={vn ? 'vi' : 'en'}>
       <MeshBackground />
 
       <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-12">
-        {route.path === '/plan' || route.path === '/flashcards' || route.path === '/inbox' ? (
-          <Suspense fallback={<PageLoading />}>
-            {route.path === '/plan' && <StudyPlanPage params={route.params} />}
-            {route.path === '/flashcards' && (
-              <FlashcardsPage key={route.params.toString()} params={route.params} />
-            )}
-            {route.path === '/inbox' && <InboxPage />}
-          </Suspense>
-        ) : (
-          <CalculatorPage inputs={inputs} setInputs={setInputs} />
-        )}
+        <Suspense fallback={<PageLoading vn={vn} />}>
+          {renderPage(route, { inputs, setInputs, vnInputs, setVnInputs })}
+        </Suspense>
 
-        <Footer />
+        <Footer lang={vn ? 'vi' : 'en'} />
       </div>
     </FeedbackProvider>
   )
 }
 
-function PageLoading() {
+function renderPage(
+  route: Route,
+  state: {
+    inputs: GradeInputs
+    setInputs: Dispatch<SetStateAction<GradeInputs>>
+    vnInputs: VnInputs
+    setVnInputs: Dispatch<SetStateAction<VnInputs>>
+  },
+): ReactNode {
+  switch (route.path) {
+    case '/plan':
+      return <StudyPlanPage params={route.params} />
+    case '/flashcards':
+      return <FlashcardsPage key={route.params.toString()} params={route.params} />
+    case '/inbox':
+      return <InboxPage />
+    case '/vn':
+      return <VnCalculatorPage inputs={state.vnInputs} setInputs={state.setVnInputs} />
+    case '/vn/ke-hoach':
+      return <VnPlanPage params={route.params} />
+    case '/vn/the-ghi-nho':
+      return <FlashcardsPage key={`vi-${route.params.toString()}`} params={route.params} lang="vi" />
+    default:
+      return <CalculatorPage inputs={state.inputs} setInputs={state.setInputs} />
+  }
+}
+
+function PageLoading({ vn }: { vn: boolean }) {
   return (
     <div className="glass-card grid h-64 w-full max-w-3xl place-items-center text-sm text-white/60">
-      Loading…
+      {vn ? 'Đang tải…' : 'Loading…'}
     </div>
   )
 }

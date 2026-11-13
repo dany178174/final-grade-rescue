@@ -69,7 +69,11 @@ export function parseCards(text: string): { cards: Card[]; skipped: number } {
       skipped++
       continue
     }
-    if (term.toLowerCase() === 'term' && definition.toLowerCase().startsWith('definition')) continue
+    const head = term.toLowerCase()
+    const body = definition.toLowerCase()
+    const isHeader =
+      (head === 'term' && body.startsWith('definition')) || (head === 'thuật ngữ' && body.startsWith('định nghĩa'))
+    if (isHeader) continue
 
     cards.push({ term, definition })
     if (cards.length >= MAX_CARDS) break
@@ -91,6 +95,9 @@ export function toAnkiFile(cards: Card[]): string {
 
 export function fileNameFor(topic: string): string {
   const slug = topic
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
@@ -103,3 +110,25 @@ export function quizletSearch(topic: string): string {
 }
 
 export const QUIZLET_CREATE_URL = 'https://quizlet.com/create-set'
+
+export const EXAMPLE_DECK_VI = [
+  'Quang hợp | Quá trình cây xanh dùng năng lượng ánh sáng để tổng hợp chất hữu cơ từ CO₂ và nước, giải phóng O₂.',
+  'Diệp lục | Sắc tố màu xanh trong lục lạp, hấp thụ năng lượng ánh sáng.',
+  'Lục lạp | Bào quan thực hiện quá trình quang hợp.',
+  'Pha sáng | Giai đoạn diễn ra ở màng tilacoit, chuyển năng lượng ánh sáng thành ATP và NADPH, giải phóng O₂.',
+  'Chu trình Calvin (pha tối) | Giai đoạn diễn ra ở chất nền lục lạp, dùng ATP và NADPH để cố định CO₂ thành đường.',
+  'Khí khổng | Lỗ nhỏ trên lá giúp trao đổi khí CO₂, O₂ và thoát hơi nước.',
+].join('\n')
+
+export function flashcardPromptVi({ topic, subject, count }: { topic: string; subject: string; count: number }): string {
+  const what = topic || '[chủ đề của bạn]'
+  const forWhat = subject ? ` môn ${subject}` : ''
+  return [
+    `Tạo ${count} thẻ ghi nhớ (flashcard) bằng tiếng Việt để mình ôn ${what}${forWhat}.`,
+    'Yêu cầu:',
+    '- Mỗi thẻ một dòng, đúng định dạng: thuật ngữ | định nghĩa',
+    '- Mỗi định nghĩa dưới 25 chữ, dễ hiểu, đúng theo SGK.',
+    '- Chọn các khái niệm, công thức, sự kiện, nhân vật dễ ra trong đề kiểm tra nhất.',
+    '- Không đánh số, không tiêu đề, không viết thêm gì trước hay sau danh sách.',
+  ].join('\n')
+}

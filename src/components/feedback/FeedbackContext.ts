@@ -15,9 +15,9 @@ export function useFeedback() {
 export const FEEDBACK_API = '/api/feedback'
 
 export const RATINGS = [
-  { value: 1, emoji: '😞', label: 'Very bad' },
-  { value: 2, emoji: '😕', label: 'Not great' },
-  { value: 3, emoji: '😐', label: 'Okay' },
-  { value: 4, emoji: '🙂', label: 'Good' },
-  { value: 5, emoji: '😍', label: 'Love it' },
+  { value: 1, emoji: '😞', label: 'Very bad', labelVi: 'Rất tệ' },
+  { value: 2, emoji: '😕', label: 'Not great', labelVi: 'Chưa tốt' },
+  { value: 3, emoji: '😐', label: 'Okay', labelVi: 'Tạm được' },
+  { value: 4, emoji: '🙂', label: 'Good', labelVi: 'Tốt' },
+  { value: 5, emoji: '😍', label: 'Love it', labelVi: 'Rất thích' },
 ] as const

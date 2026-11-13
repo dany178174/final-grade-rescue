@@ -10,6 +10,14 @@ const KIND_STYLES: Record<ResourceKind, string> = {
   'Study guide': 'border-violet-300/25 bg-violet-400/10 text-violet-200',
   Practice: 'border-orange-300/25 bg-orange-400/10 text-orange-200',
   Tool: 'border-white/20 bg-white/[0.08] text-white/75',
+  Kênh: 'border-pink-300/25 bg-pink-400/10 text-pink-200',
+  'Khóa học': 'border-sky-300/25 bg-sky-400/10 text-sky-200',
+  'SGK điện tử': 'border-emerald-300/25 bg-emerald-400/10 text-emerald-200',
+  'Lời giải': 'border-violet-300/25 bg-violet-400/10 text-violet-200',
+  'Luyện tập': 'border-orange-300/25 bg-orange-400/10 text-orange-200',
+  Báo: 'border-amber-300/25 bg-amber-400/10 text-amber-200',
+  'Tra cứu': 'border-white/20 bg-white/[0.08] text-white/75',
+  'Công cụ': 'border-white/20 bg-white/[0.08] text-white/75',
 }
 
 export function ResourceCard({ resource }: { resource: Resource }) {
@@ -49,7 +57,18 @@ export function ResourceGrid({ resources }: { resources: Resource[] }) {
   )
 }
 
-export function SearchLink({ href, query, where }: { href: string; query: string; where: string }) {
+export function SearchLink({
+  href,
+  query,
+  where,
+  prefix = 'on',
+}: {
+  href: string
+  query: string
+  where: string
+  /** "on" in English, "trên" in Vietnamese. */
+  prefix?: string
+}) {
   return (
     <a
       href={href}
@@ -59,7 +78,9 @@ export function SearchLink({ href, query, where }: { href: string; query: string
     >
       <SearchIcon className="size-4 shrink-0 text-fuchsia-200/80" />
       <span className="truncate font-medium text-white">“{query}”</span>
-      <span className="shrink-0 text-white/45">on {where}</span>
+      <span className="shrink-0 text-white/45">
+        {prefix} {where}
+      </span>
     </a>
   )
 }

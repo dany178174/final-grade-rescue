@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react'
 import { copyText, smallButton } from '../lib/ui'
 import { CheckIcon, CopyIcon } from './icons'
 
-export function CopyButton({ text, label = 'Copy' }: { text: string; label?: string }) {
+export function CopyButton({
+  text,
+  label = 'Copy',
+  copiedLabel = 'Copied!',
+}: {
+  text: string
+  label?: string
+  copiedLabel?: string
+}) {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -19,7 +27,7 @@ export function CopyButton({ text, label = 'Copy' }: { text: string; label?: str
       aria-live="polite"
     >
       {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
-      {copied ? 'Copied!' : label}
+      {copied ? copiedLabel : label}
     </button>
   )
 }
