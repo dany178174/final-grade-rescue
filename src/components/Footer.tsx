@@ -33,6 +33,14 @@ export function Footer({ lang = 'en' }: { lang?: 'en' | 'vi' }) {
         <a href={lang === 'vi' ? '#/vn/the-ghi-nho' : '#/flashcards'} className={linkClass}>
           {t.flashcards}
         </a>
+        {lang === 'vi' && (
+          <>
+            <Dot />
+            <a href="#/vn/lich-on" className={linkClass}>
+              Lịch ôn nhiều môn
+            </a>
+          </>
+        )}
         {feedback.enabled && (
           <>
             <Dot />

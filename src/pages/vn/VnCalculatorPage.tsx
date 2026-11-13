@@ -194,6 +194,24 @@ export function VnCalculatorPage({ inputs, setInputs }: Props) {
             </button>
           )}
 
+          <a
+            href={
+              outcome.status === 'ready'
+                ? hrefFor('/vn/lich-on', {
+                    them: String(Math.max(0, outcome.score)),
+                    loai: outcome.remaining.some((r) => r.key === 'ck' || r.key === 'hk2')
+                      ? 'ck'
+                      : outcome.remaining.some((r) => r.key === 'gk')
+                        ? 'gk'
+                        : 'tx',
+                  })
+                : '#/vn/lich-on'
+            }
+            className={`${secondaryButton} mt-3 w-full`}
+          >
+            🗓️ {outcome.status === 'ready' ? 'Thêm vào lịch ôn nhiều môn' : 'Lịch ôn nhiều môn'}
+          </a>
+
           <button
             type="button"
             onClick={() => setInputs({ ...EMPTY_VN_INPUTS, mode: inputs.mode, n: inputs.n })}

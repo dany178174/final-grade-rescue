@@ -13,6 +13,7 @@ const FlashcardsPage = lazy(() => import('./pages/FlashcardsPage'))
 const InboxPage = lazy(() => import('./pages/InboxPage'))
 const VnCalculatorPage = lazy(() => import('./pages/vn/VnCalculatorPage').then((m) => ({ default: m.VnCalculatorPage })))
 const VnPlanPage = lazy(() => import('./pages/vn/VnPlanPage'))
+const VnMultiPlanPage = lazy(() => import('./pages/vn/VnMultiPlanPage'))
 
 const isVietnamese = (path: string) => path === '/vn' || path.startsWith('/vn/')
 
@@ -67,6 +68,8 @@ function renderPage(
       return <VnCalculatorPage inputs={state.vnInputs} setInputs={state.setVnInputs} />
     case '/vn/ke-hoach':
       return <VnPlanPage params={route.params} />
+    case '/vn/lich-on':
+      return <VnMultiPlanPage params={route.params} />
     case '/vn/the-ghi-nho':
       return <FlashcardsPage key={`vi-${route.params.toString()}`} params={route.params} lang="vi" />
     default:

@@ -8,6 +8,9 @@ import { primaryButton, smallButton } from '../../lib/ui'
 import { averageWith, formatAverage, formatVi, type VnOutcome } from '../../lib/vnGrade'
 import { RATINGS, useFeedback } from '../feedback/FeedbackContext'
 import { ArrowRightIcon } from '../icons'
+import { SessionLinks } from '../SessionLinks'
+import { sessionContent } from '../../data/vn/sessionContent'
+import { hrefFor } from '../../lib/router'
 import { Section, ShareButton, Stat, Timeline } from '../plan/PlanResult'
 import { ResourceCard } from '../plan/ResourceCard'
 import { VnResourceTabs } from './VnResourceTabs'
@@ -40,6 +43,30 @@ export function VnPlanResult(props: VnPlanResultProps) {
   const tierStyle = TIER_STYLES[outcome.tier]
   const styleInfo = VN_STYLES[style]
   const isYear = exam.short === 'học kì 2'
+  const contentArgs = {
+    mode: style,
+    subjectName,
+    grade,
+    topic,
+    examShort: exam.short === 'học kì 2' ? 'cuối kì' : exam.short,
+    prompt: props.promptContext,
+    flashcardsHref: props.flashcardsHref,
+  }
+  // Each learning step in the schedule carries the resources to do it right away.
+  const scheduleActions = {
+    learn: (
+      <>
+        {VN_STYLE_ACTIONS[style].learn}
+        <SessionLinks links={sessionContent({ ...contentArgs, phase: 'learn' }).links} copiedLabel="Đã chép!" />
+      </>
+    ),
+    review: (
+      <>
+        {VN_STYLE_ACTIONS[style].review}
+        <SessionLinks links={sessionContent({ ...contentArgs, phase: 'review' }).links} copiedLabel="Đã chép!" />
+      </>
+    ),
+  }
 
   return (
     <div className="space-y-4 sm:space-y-5">
@@ -120,7 +147,7 @@ export function VnPlanResult(props: VnPlanResultProps) {
         <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-white/80">
           ⏱️ Mỗi ngày: <span className="font-semibold text-white">{plan.hours}</span>
         </p>
-        <Timeline phases={VN_SCHEDULES[daysId]} actions={VN_STYLE_ACTIONS[style]} styleEmoji={styleInfo.emoji} />
+        <Timeline phases={VN_SCHEDULES[daysId]} actions={scheduleActions} styleEmoji={styleInfo.emoji} />
       </Section>
 
       <Section emoji="🎒" title="Tài liệu học" sub="Toàn bộ bằng tiếng Việt. Bấm từng tab để đổi cách học.">
@@ -151,6 +178,27 @@ export function VnPlanResult(props: VnPlanResultProps) {
             <ArrowRightIcon className="size-4" />
           </a>
         </div>
+      </Section>
+
+      <Section
+        emoji="🗓️"
+        title="Có nhiều môn cùng thi?"
+        sub="Lập một thời gian biểu chung cho tất cả các môn, có giờ cụ thể, ưu tiên môn thi sớm và môn cần nhiều điểm."
+      >
+        <a
+          href={hrefFor('/vn/lich-on', {
+            lop: String(grade),
+            mon: subject.id,
+            khac: subject.id === 'khac' ? subjectName : undefined,
+            cd: topic,
+            them: String(Math.max(0, outcome.score)),
+            loai: exam.short === 'giữa kì' ? 'gk' : exam.short === 'kiểm tra 15 phút' ? 'tx' : 'ck',
+          })}
+          className={`${primaryButton} w-full sm:w-auto`}
+        >
+          Lập lịch ôn nhiều môn
+          <ArrowRightIcon className="size-4" />
+        </a>
       </Section>
 
       <Section emoji="⚡" title="Học thông minh, không cần học lâu" sub="Thói quen hiệu quả với mọi môn và mọi người.">

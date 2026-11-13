@@ -34,8 +34,6 @@ const COPY = {
     title: 'Turn any topic into a Quizlet set',
     intro:
       'AI writes the cards, you study them right here, then send them to Quizlet or Anki with one paste. Takes about 2 minutes.',
-    backPlan: 'Study plan',
-    backCalc: 'Calculator',
     step1: 'Get your cards from AI',
     step1Sub: 'Tell us the topic, copy the prompt, paste it into any AI chat.',
     topic: 'Topic',
@@ -86,8 +84,6 @@ const COPY = {
     title: 'Biến chủ đề bất kì thành bộ thẻ Quizlet',
     intro:
       'AI soạn thẻ, bạn học ngay tại đây, rồi đưa sang Quizlet hoặc Anki chỉ bằng một lần dán. Mất khoảng 2 phút.',
-    backPlan: 'Kế hoạch ôn',
-    backCalc: 'Máy tính điểm',
     step1: 'Nhờ AI soạn thẻ',
     step1Sub: 'Nhập chủ đề, sao chép câu lệnh rồi dán vào ứng dụng AI bất kì.',
     topic: 'Chủ đề',
@@ -183,14 +179,17 @@ function context(params: URLSearchParams, lang: Lang) {
     const grade = params.get('lop')
     const name = subject?.id === 'khac' ? (params.get('khac') ?? '') : (subject?.name ?? '')
     const fromPlan = ['lop', 'mon', 'cach', 'ngay'].every((k) => params.get(k))
+    const fromTimetable = params.get('tu') === 'lich-on'
     return {
       subjectName: name && grade ? `${name} lớp ${grade}` : name,
       topic: params.get('cd') ?? '',
       topicPlaceholder: subject?.topicExample,
-      fromPlan,
-      backHref: fromPlan
-        ? hrefFor('/vn/ke-hoach', pick(params, [...VN_CALC_KEYS, ...VN_PLAN_KEYS]))
-        : hrefFor('/vn', pick(params, VN_CALC_KEYS)),
+      backLabel: fromTimetable ? 'Lịch ôn nhiều môn' : fromPlan ? 'Kế hoạch ôn' : 'Máy tính điểm',
+      backHref: fromTimetable
+        ? '#/vn/lich-on'
+        : fromPlan
+          ? hrefFor('/vn/ke-hoach', pick(params, [...VN_CALC_KEYS, ...VN_PLAN_KEYS]))
+          : hrefFor('/vn', pick(params, VN_CALC_KEYS)),
     }
   }
   const subject = getSubject(params.get('s'))
@@ -199,7 +198,7 @@ function context(params: URLSearchParams, lang: Lang) {
     subjectName: subject?.id === 'other' ? (params.get('o') ?? '') : (subject?.promptName ?? ''),
     topic: params.get('t') ?? '',
     topicPlaceholder: subject?.topicExample,
-    fromPlan,
+    backLabel: fromPlan ? 'Study plan' : 'Calculator',
     backHref: fromPlan
       ? hrefFor('/plan', pick(params, PLAN_KEYS))
       : hrefFor('/', pick(params, ['c', 'd', 'w'])),
@@ -249,7 +248,7 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
       <nav className="mb-4">
         <a href={ctx.backHref} className={smallButton}>
           <ArrowLeftIcon className="size-3.5" />
-          {ctx.fromPlan ? t.backPlan : t.backCalc}
+          {ctx.backLabel}
         </a>
       </nav>
 

@@ -9,13 +9,14 @@ import {
   type SchedulePhase,
   type LearningStyle,
 } from '../../data/plan'
-import type { PromptContext } from '../../data/prompts'
-import { STUDY_TOOLS, type Subject } from '../../data/subjects'
+import { buildPromptTemplates, type PromptContext } from '../../data/prompts'
+import { STUDY_TOOLS, youtubeSearch, type Subject } from '../../data/subjects'
 import { courseGradeWith, formatPercent, type TierId } from '../../lib/grade'
 import { TIER_STYLES } from '../../lib/tierStyles'
 import { copyText, primaryButton, smallButton } from '../../lib/ui'
 import { RATINGS, useFeedback } from '../feedback/FeedbackContext'
 import { ArrowRightIcon, CheckIcon, ShareIcon } from '../icons'
+import { SessionLinks, type LinkItem } from '../SessionLinks'
 import { ResourceCard } from './ResourceCard'
 import { ResourceTabs } from './ResourceTabs'
 
@@ -105,6 +106,38 @@ export function PlanResult(props: PlanResultProps) {
   const styleInfo = LEARNING_STYLES[style]
   const maxGrade = courseGradeWith(current, weight, 100)
 
+  // Each learning step in the schedule carries the resources to do it right away.
+  const prompts = Object.fromEntries(buildPromptTemplates(props.promptContext).map((p) => [p.id, p.text]))
+  const focus = topic || searchName
+  const learnLinks: LinkItem[] =
+    style === 'video'
+      ? [{ kind: 'link', label: '🎬 Watch videos', href: youtubeSearch(`${focus} explained`) }]
+      : style === 'ai'
+        ? [{ kind: 'copy', label: '🤖 Copy prompt', text: prompts.explain }]
+        : subject.reading.slice(0, 1).map((r) => ({ kind: 'link' as const, label: `📚 ${r.title}`, href: r.url }))
+  const reviewLinks: LinkItem[] = [
+    { kind: 'link', label: '🃏 Flashcards', href: props.flashcardsHref },
+    style === 'video'
+      ? { kind: 'link', label: '🎬 Review videos', href: youtubeSearch(`${searchName} final exam review`) }
+      : style === 'ai'
+        ? { kind: 'copy', label: '🤖 Copy prompt', text: prompts.fix }
+        : { kind: 'link', label: '📝 Practice', href: youtubeSearch(`${focus} practice problems`) },
+  ]
+  const scheduleActions = {
+    learn: (
+      <>
+        {STYLE_ACTIONS[style].learn}
+        <SessionLinks links={learnLinks} copiedLabel="Copied!" />
+      </>
+    ),
+    review: (
+      <>
+        {STYLE_ACTIONS[style].review}
+        <SessionLinks links={reviewLinks} copiedLabel="Copied!" />
+      </>
+    ),
+  }
+
   return (
     <div className="space-y-4 sm:space-y-5">
       {/* Overview */}
@@ -173,7 +206,7 @@ export function PlanResult(props: PlanResultProps) {
         <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-white/80">
           ⏱️ Daily target: <span className="font-semibold text-white">{plan.hours}</span>
         </p>
-        <Schedule daysId={daysId} style={style} />
+        <Timeline phases={SCHEDULES[daysId]} actions={scheduleActions} styleEmoji={styleInfo.emoji} />
       </Section>
 
       <Section
@@ -307,10 +340,6 @@ function ScenarioTable({ current, desired, weight }: { current: number; desired:
   )
 }
 
-function Schedule({ daysId, style }: { daysId: DaysId; style: LearningStyle }) {
-  return <Timeline phases={SCHEDULES[daysId]} actions={STYLE_ACTIONS[style]} styleEmoji={LEARNING_STYLES[style].emoji} />
-}
-
 /** A vertical schedule. Tasks written as {learn} or {review} become the learner's style-specific actions. */
 export function Timeline({
   phases,
@@ -318,7 +347,7 @@ export function Timeline({
   styleEmoji,
 }: {
   phases: SchedulePhase[]
-  actions: { learn: string; review: string }
+  actions: { learn: ReactNode; review: ReactNode }
   styleEmoji: string
 }) {
   return (
@@ -348,7 +377,7 @@ export function Timeline({
                   ) : (
                     <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-white/35" />
                   )}
-                  <span className={`text-pretty ${styled ? 'text-white/90' : ''}`}>{text}</span>
+                  <span className={`min-w-0 text-pretty ${styled ? 'text-white/90' : ''}`}>{text}</span>
                 </li>
               )
             })}
