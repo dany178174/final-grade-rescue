@@ -1,17 +1,19 @@
-import { LanguagesIcon, LifebuoyIcon } from '../icons'
+import { useAppearance } from '../appearance/AppearanceContext'
+import { LanguagesIcon, LifebuoyIcon, PaletteIcon } from '../icons'
 import { SupportCards } from './SupportCards'
 import { NAV, type Lang } from './nav'
 
 /** Full-height sidebar on wide screens: brand, tools, then install / coffee at the bottom. */
 export function SideNav({ lang, path }: { lang: Lang; path: string }) {
   const vi = lang === 'vi'
+  const { open } = useAppearance()
   return (
     <div className="flex h-full flex-col overflow-y-auto px-4 py-6">
       <a
         href={vi ? '#/vn' : '#/'}
         className="flex items-center gap-3 rounded-xl px-2 py-1 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
       >
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-500 shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_8px_22px_-8px_rgb(125_104_250/0.9)]">
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-500 shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_8px_22px_-8px_color-mix(in_oklab,var(--color-accent-500)_90%,transparent)]">
           <LifebuoyIcon className="size-5 text-white" />
         </span>
         <span className="min-w-0">
@@ -50,6 +52,14 @@ export function SideNav({ lang, path }: { lang: Lang; path: string }) {
 
       <div className="mt-auto space-y-3 pt-8">
         <SupportCards lang={lang} layout="rail" />
+        <button
+          type="button"
+          onClick={open}
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white/60 transition hover:bg-white/[0.04] hover:text-white/90 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
+        >
+          <PaletteIcon className="size-4" />
+          {vi ? 'Giao diện: màu, cỡ chữ…' : 'Appearance: colours, text size…'}
+        </button>
         {vi && (
           <a
             href="#/"
@@ -61,6 +71,31 @@ export function SideNav({ lang, path }: { lang: Lang; path: string }) {
           </a>
         )}
       </div>
+    </div>
+  )
+}
+
+/** Brand and the appearance button above the page on phones and tablets. */
+export function MobileTopBar({ lang }: { lang: Lang }) {
+  const vi = lang === 'vi'
+  const { open } = useAppearance()
+  return (
+    <div className="mx-auto mb-4 flex max-w-5xl items-center justify-between xl:hidden">
+      <a href={vi ? '#/vn' : '#/'} className="flex items-center gap-2.5 rounded-xl py-1 pr-2 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none">
+        <span className="grid size-8 place-items-center rounded-lg bg-accent-500 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]">
+          <LifebuoyIcon className="size-4 text-white" />
+        </span>
+        <span className="text-sm font-semibold tracking-tight">{vi ? 'Cứu Điểm' : 'Grade Rescue'}</span>
+      </a>
+      <button
+        type="button"
+        onClick={open}
+        aria-label={vi ? 'Giao diện: đổi màu, cỡ chữ' : 'Appearance: colours and text size'}
+        className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-white/75 transition hover:bg-white/[0.08] hover:text-white"
+      >
+        <PaletteIcon className="size-4 text-accent-300" />
+        {vi ? 'Giao diện' : 'Theme'}
+      </button>
     </div>
   )
 }

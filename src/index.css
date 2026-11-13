@@ -2,7 +2,10 @@
 
 @theme {
   --font-sans: "Inter Variable", Inter, Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
+/* Always emitted, because the appearance panel overrides them at runtime. */
+@theme static {
   /* One accent for the whole app (buttons, focus rings, selection, links). */
   --color-accent-50: #f3f1ff;
   --color-accent-100: #e9e5ff;
@@ -28,7 +31,7 @@
 @layer base {
   html {
     color-scheme: dark;
-    background-color: #07080f;
+    background-color: var(--color-ink-950);
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
@@ -40,7 +43,7 @@
   }
 
   ::selection {
-    background-color: rgb(125 104 250 / 0.45);
+    background-color: color-mix(in oklab, var(--color-accent-500) 45%, transparent);
   }
 }
 
@@ -60,7 +63,12 @@
   height: 70vmax;
   top: -38vmax;
   left: -18vmax;
-  background: radial-gradient(circle, rgb(109 88 245 / 0.28) 0%, rgb(76 60 190 / 0.1) 42%, transparent 68%);
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-accent-600) 30%, transparent) 0%,
+    color-mix(in oklab, var(--color-accent-700) 11%, transparent) 42%,
+    transparent 68%
+  );
   animation-name: mesh-drift-1;
   animation-duration: 34s;
 }
@@ -143,12 +151,17 @@
   }
 }
 
+/* "Nền chuyển động" switched off in the appearance panel. */
+[data-motion='off'] .mesh-blob {
+  animation: none;
+}
+
 /* ---------- Shared glass surface ---------- */
 
 @utility glass-card {
-  border-radius: 1.25rem;
+  border-radius: calc(1.25rem * var(--radius-scale, 1));
   border: 1px solid rgb(255 255 255 / 0.08);
-  background-color: rgb(16 18 33 / 0.8);
+  background-color: color-mix(in oklab, var(--color-ink-850) 82%, transparent);
   box-shadow:
     inset 0 1px 0 0 rgb(255 255 255 / 0.04),
     0 24px 60px -28px rgb(0 0 0 / 0.8);

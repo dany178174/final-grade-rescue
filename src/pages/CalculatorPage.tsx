@@ -74,12 +74,12 @@ export function CalculatorPage({ inputs, setInputs }: CalculatorPageProps) {
         >
           🇻🇳 Học sinh Việt Nam? Dùng thang điểm 10 →
         </a>
-        <div className="mb-4 grid size-12 place-items-center rounded-2xl border border-accent-300/25 bg-accent-500/15 shadow-[0_10px_30px_-12px_rgb(125_104_250/0.8)]">
+        <div className="mb-4 grid size-12 place-items-center rounded-2xl border border-accent-300/25 bg-accent-500/15 shadow-[0_10px_30px_-12px_color-mix(in_oklab,var(--color-accent-500)_80%,transparent)]">
           <LifebuoyIcon className="size-6 text-accent-200" />
         </div>
         <h1 className="text-[1.65rem] leading-tight font-semibold tracking-tight text-balance sm:text-3xl">
           Final Grade{' '}
-          <span className="bg-linear-to-r from-accent-300 via-accent-200 to-sky-300 bg-clip-text text-transparent">
+          <span className="bg-linear-to-r from-accent-300 via-accent-200 to-accent-100 bg-clip-text text-transparent">
             Rescue
           </span>{' '}
           Calculator

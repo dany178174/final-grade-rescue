@@ -1,8 +1,9 @@
+import { useAppearance } from './appearance/AppearanceContext'
 import { useFeedback } from './feedback/FeedbackContext'
 
 const COPY = {
-  en: { tagline: 'Built to save your GPA.', feedback: 'Feedback', switchLabel: '🇻🇳 Học sinh Việt Nam', switchHref: '#/vn' },
-  vi: { tagline: 'Được làm ra để cứu điểm cho bạn.', feedback: 'Góp ý', switchLabel: '🇺🇸 US grading (English)', switchHref: '#/' },
+  en: { tagline: 'Built to save your GPA.', feedback: 'Feedback', appearance: 'Appearance', switchLabel: '🇻🇳 Học sinh Việt Nam', switchHref: '#/vn' },
+  vi: { tagline: 'Được làm ra để cứu điểm cho bạn.', feedback: 'Góp ý', appearance: 'Giao diện', switchLabel: '🇺🇸 US grading (English)', switchHref: '#/' },
 }
 
 const linkClass =
@@ -10,6 +11,7 @@ const linkClass =
 
 export function Footer({ lang = 'en' }: { lang?: 'en' | 'vi' }) {
   const feedback = useFeedback()
+  const appearance = useAppearance()
   const t = COPY[lang]
   return (
     <footer className="mt-8 flex flex-col items-center gap-2 text-sm text-white/55">
@@ -18,6 +20,12 @@ export function Footer({ lang = 'en' }: { lang?: 'en' | 'vi' }) {
         <a href={t.switchHref} lang={lang === 'vi' ? 'en' : 'vi'} className={linkClass}>
           {t.switchLabel}
         </a>
+        <span aria-hidden className="text-white/25">
+          •
+        </span>
+        <button type="button" onClick={appearance.open} className={linkClass}>
+          {t.appearance}
+        </button>
         {feedback.enabled && (
           <>
             <span aria-hidden className="text-white/25">

@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import { AppearanceProvider } from './components/appearance/AppearanceProvider'
 import { FeedbackProvider } from './components/feedback/FeedbackProvider'
 import { Footer } from './components/Footer'
 import { MeshBackground } from './components/MeshBackground'
-import { SideNav, TabBar } from './components/shell/Navigation'
+import { MobileTopBar, SideNav, TabBar } from './components/shell/Navigation'
 import { SupportCards } from './components/shell/SupportCards'
 import { inputsFromParams, type GradeInputs } from './lib/grade'
 import { parseHash, useHashRoute, type Route } from './lib/router'
@@ -38,6 +39,7 @@ export default function App() {
   }, [vn])
 
   return (
+    <AppearanceProvider lang={lang}>
     <FeedbackProvider lang={lang}>
       <MeshBackground />
 
@@ -45,8 +47,9 @@ export default function App() {
         <SideNav lang={lang} path={route.path} />
       </aside>
 
-      <div className="relative z-10 px-4 pt-[max(2rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pt-12 xl:pt-10 xl:pr-10 xl:pb-12 xl:pl-[calc(16rem+2.5rem)]">
-        <div className="mx-auto flex min-h-[calc(100dvh-9rem)] max-w-5xl flex-col items-center justify-center xl:min-h-[calc(100dvh-5rem)]">
+      <div className="relative z-10 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pt-5 xl:pt-10 xl:pr-10 xl:pb-12 xl:pl-[calc(16rem+2.5rem)]">
+        <MobileTopBar lang={lang} />
+        <div className="mx-auto flex min-h-[calc(100dvh-12rem)] max-w-5xl flex-col items-center justify-center xl:min-h-[calc(100dvh-5rem)]">
           <Suspense fallback={<PageLoading vn={vn} />}>
             {renderPage(route, { inputs, setInputs, vnInputs, setVnInputs })}
           </Suspense>
@@ -59,6 +62,7 @@ export default function App() {
 
       <TabBar lang={lang} path={route.path} />
     </FeedbackProvider>
+    </AppearanceProvider>
   )
 }
 
