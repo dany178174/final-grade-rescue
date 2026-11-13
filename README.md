@@ -36,6 +36,12 @@ Required = (Desired − Current × (1 − Weight / 100)) / (Weight / 100)
 
 The score is rounded to two decimals before the tier is picked, so the color always matches the number on screen.
 
+## Install as an app
+
+The site is a Progressive Web App: `public/manifest.webmanifest`, icons in `public/`, and `public/sw.js` (network-first pages, cache-first hashed assets, never caches `/api`). On Android the footer shows **Install app** when the browser allows it; on iPhone it explains Safari's **Add to Home Screen**. Once visited, pages also open offline.
+
+To publish on Google Play, package the live URL with [PWABuilder](https://www.pwabuilder.com) (Trusted Web Activity) and serve the generated `assetlinks.json` at `public/.well-known/assetlinks.json`.
+
 ## Vietnamese section (`#/vn`)
 
 A fully Vietnamese version for students in Vietnam, following Chương trình GDPT 2018 and Thông tư 22/2021:

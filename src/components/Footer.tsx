@@ -1,4 +1,5 @@
 import { useFeedback } from './feedback/FeedbackContext'
+import { InstallButton } from './InstallButton'
 
 const BUY_ME_A_COFFEE_URL = 'https://dungletien.gumroad.com/l/graderescue-coffee'
 
@@ -44,6 +45,7 @@ export function Footer({ lang = 'en' }: { lang?: 'en' | 'vi' }) {
         <a href={BUY_ME_A_COFFEE_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>
           {t.coffee}
         </a>
+        <InstallButton lang={lang} className={linkClass} separator={<Dot />} />
       </nav>
     </footer>
   )

@@ -1,0 +1,22 @@
+{
+  "name": "Final Grade Rescue",
+  "short_name": "Grade Rescue",
+  "description": "Find out what you need on your next test, then get a study plan. Có phiên bản tiếng Việt cho học sinh Việt Nam.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05061a",
+  "theme_color": "#05061a",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Máy tính Cứu Điểm (Việt Nam)", "short_name": "Cứu Điểm", "url": "/#/vn", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Flashcard Maker", "short_name": "Flashcards", "url": "/#/flashcards", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
