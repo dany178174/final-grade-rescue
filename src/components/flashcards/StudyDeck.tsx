@@ -110,14 +110,14 @@ export function StudyDeck({ cards, labels = EN_DECK_LABELS }: { cards: Card[]; l
             className="flip-card block h-64 w-full rounded-3xl text-left focus-visible:ring-4 focus-visible:ring-accent-500/30 focus-visible:outline-none sm:h-72"
           >
             <span className="flip-card-inner block" data-flipped={flipped}>
-              <span className="flip-card-face flex flex-col rounded-3xl border border-white/15 bg-[#161a3d] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
+              <span className="flip-card-face flex flex-col rounded-3xl border border-white/15 bg-ink-800 p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
                 <span className="text-[11px] font-semibold tracking-[0.14em] text-sky-200/70 uppercase">{labels.term}</span>
                 <span className="flex flex-1 items-center justify-center overflow-auto py-3 text-center text-2xl leading-snug font-semibold text-balance sm:text-3xl">
                   {card.term}
                 </span>
                 <span className="text-center text-xs text-white/40">{labels.tapHint}</span>
               </span>
-              <span className="flip-card-face flip-card-back flex flex-col rounded-3xl border border-accent-300/25 bg-[#211a42] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
+              <span className="flip-card-face flip-card-back flex flex-col rounded-3xl border border-accent-300/25 bg-[color-mix(in_oklab,var(--color-accent-500)_14%,var(--color-ink-850))] p-6 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.7)]">
                 <span className="text-[11px] font-semibold tracking-[0.14em] text-accent-200/70 uppercase">
                   {labels.definition}
                 </span>

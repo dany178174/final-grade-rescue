@@ -136,7 +136,7 @@ export default function VnPlanPage({ params }: { params: URLSearchParams }) {
         <section className="glass-card relative overflow-hidden p-6 sm:p-8">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent"
+            className="card-sheen pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent"
           />
           <div className="relative">
             <p className={`mb-6 inline-flex flex-wrap items-center gap-x-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${tierStyle.badge}`}>

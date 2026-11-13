@@ -206,7 +206,7 @@ function AiPanel({ subject, topic, promptContext }: { subject: VnSubject; topic?
           {VN_PROMPT_FORMULA.map((item, i) => (
             <li key={item.part} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
               <div className="flex items-center gap-2.5">
-                <span className="grid size-7 place-items-center rounded-lg bg-accent-500 text-xs font-bold">
+                <span className="grid size-7 place-items-center rounded-lg bg-accent-500 text-xs font-bold text-on-accent">
                   {i + 1}
                 </span>
                 <span className="font-semibold">{item.part}</span>

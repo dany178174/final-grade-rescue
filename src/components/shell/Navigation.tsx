@@ -14,7 +14,7 @@ export function SideNav({ lang, path }: { lang: Lang; path: string }) {
         className="flex items-center gap-3 rounded-xl px-2 py-1 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
       >
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-500 shadow-[inset_0_1px_0_rgb(255_255_255/0.25),0_8px_22px_-8px_color-mix(in_oklab,var(--color-accent-500)_90%,transparent)]">
-          <LifebuoyIcon className="size-5 text-white" />
+          <LifebuoyIcon className="size-5 text-on-accent" />
         </span>
         <span className="min-w-0">
           <span className="block text-[15px] leading-tight font-semibold tracking-tight">{vi ? 'Cứu Điểm' : 'Grade Rescue'}</span>
@@ -83,7 +83,7 @@ export function MobileTopBar({ lang }: { lang: Lang }) {
     <div className="mx-auto mb-4 flex max-w-5xl items-center justify-between xl:hidden">
       <a href={vi ? '#/vn' : '#/'} className="flex items-center gap-2.5 rounded-xl py-1 pr-2 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none">
         <span className="grid size-8 place-items-center rounded-lg bg-accent-500 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]">
-          <LifebuoyIcon className="size-4 text-white" />
+          <LifebuoyIcon className="size-4 text-on-accent" />
         </span>
         <span className="text-sm font-semibold tracking-tight">{vi ? 'Cứu Điểm' : 'Grade Rescue'}</span>
       </a>

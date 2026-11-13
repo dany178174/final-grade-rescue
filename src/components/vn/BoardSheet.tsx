@@ -91,13 +91,13 @@ const LOOKS: Record<SheetStyle, Look> = {
       subject: 'bg-[#bfbfbf] text-[#333]',
       hs1: 'bg-[#bfbfbf] text-[#111]',
       hs2: 'bg-[#00b0f0] text-[#04202b]',
-      hs3: 'bg-[#c00000] text-white',
-      tb: 'bg-[#c00000] text-white',
+      hs3: 'bg-[#c00000] text-[#fff]',
+      tb: 'bg-[#c00000] text-[#fff]',
       year: 'bg-[#7dd3fc] text-[#04202b]',
       total: 'bg-[#e879f9] text-[#2a0730]',
       need: darkHead,
     },
-    col: (i) => (i < 6 ? 'bg-[#d9d9d9] text-[#222]' : i === 6 ? 'bg-[#a6a6a6] text-[#111]' : i < 10 ? 'bg-[#00b0f0] text-[#04202b]' : 'bg-[#c00000] text-white'),
+    col: (i) => (i < 6 ? 'bg-[#d9d9d9] text-[#222]' : i === 6 ? 'bg-[#a6a6a6] text-[#111]' : i < 10 ? 'bg-[#00b0f0] text-[#04202b]' : 'bg-[#c00000] text-[#fff]'),
     tbCell: 'bg-[#d9d9d9] text-[#111]',
     totalCell: 'bg-[#fae8ff] text-[#3b0a45]',
   },
@@ -435,7 +435,7 @@ export function BoardSheet({ title, rows, goal, isYear, onRow, onRemove, onGoal 
                 aria-pressed={goal === g.id}
                 onClick={() => onGoal(g.id)}
                 className={`h-8 rounded-lg text-xs font-bold transition ${
-                  goal === g.id ? 'bg-accent-500 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]' : 'text-white/55 hover:text-white/85'
+                  goal === g.id ? 'bg-accent-500 text-on-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]' : 'text-white/55 hover:text-white/85'
                 }`}
               >
                 {g.label}

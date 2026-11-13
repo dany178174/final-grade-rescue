@@ -112,7 +112,7 @@ function CoffeeCard({ lang, compact }: { lang: Lang; compact?: boolean }) {
           {!compact && <span className="mt-0.5 block text-xs text-pretty text-white/50">{t.coffeeSub}</span>}
         </span>
       </span>
-      <span className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-amber-300 text-sm font-semibold text-[#2a1405] transition group-hover:bg-amber-200">
+      <span className="mt-3 inline-flex h-9 w-full items-center justify-center rounded-lg bg-[#fcd34d] text-sm font-semibold text-[#2a1405] transition group-hover:bg-[#fde68a]">
         {t.coffee}
       </span>
     </a>

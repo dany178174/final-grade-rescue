@@ -4,6 +4,7 @@ import {
   accentHex,
   applyAppearance,
   DEFAULT_APPEARANCE,
+  isLight,
   loadAppearance,
   saveAppearance,
   SURFACES,
@@ -11,6 +12,7 @@ import {
   type Radius,
   type SheetStyle,
   type TextSize,
+  type ThemeMode,
 } from '../../lib/appearance'
 import { primaryButton, selectableCard, smallButton } from '../../lib/ui'
 import { PaletteIcon, ResetIcon } from '../icons'
@@ -25,12 +27,14 @@ const COPY = {
     preview: 'Xem trước',
     button: 'Nút chính',
     chip: 'Đang chọn',
+    mode: 'Chế độ',
+    modes: { dark: 'Tối', light: 'Sáng', auto: 'Theo máy' },
     accent: 'Màu nhấn',
     custom: 'Tự chọn màu',
     surface: 'Màu nền',
     sheet: 'Kiểu bảng điểm',
     sheetModern: 'Hiện đại',
-    sheetModernSub: 'Màu dịu, hợp nền tối',
+    sheetModernSub: 'Màu dịu, nhẹ mắt',
     sheetExcel: 'Giống Excel',
     sheetExcelSub: 'Vàng, xanh tươi như file của lớp',
     size: 'Cỡ chữ',
@@ -49,12 +53,14 @@ const COPY = {
     preview: 'Preview',
     button: 'Main button',
     chip: 'Selected',
+    mode: 'Mode',
+    modes: { dark: 'Dark', light: 'Light', auto: 'Device' },
     accent: 'Accent colour',
     custom: 'Pick any colour',
     surface: 'Background',
     sheet: 'Grade sheet style',
     sheetModern: 'Modern',
-    sheetModernSub: 'Soft colours for a dark page',
+    sheetModernSub: 'Soft, easy on the eyes',
     sheetExcel: 'Like Excel',
     sheetExcelSub: 'Bright yellow and green',
     size: 'Text size',
@@ -89,7 +95,7 @@ function Segmented<T extends string>({ value, options, onChange }: { value: T; o
           aria-label={o.aria}
           onClick={() => onChange(o.id)}
           className={`flex h-10 items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-accent-400/60 focus-visible:outline-none ${
-            value === o.id ? 'bg-accent-500 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]' : 'text-white/60 hover:text-white'
+            value === o.id ? 'bg-accent-500 text-on-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]' : 'text-white/60 hover:text-white'
           }`}
         >
           {o.label}
@@ -102,6 +108,7 @@ function Segmented<T extends string>({ value, options, onChange }: { value: T; o
 function Panel({ lang, appearance, update, onClose }: { lang: Lang; appearance: Appearance; update: (p: Partial<Appearance>) => void; onClose: () => void }) {
   const t = COPY[lang]
   const custom = !ACCENTS.some((a) => a.id === appearance.accent)
+  const light = isLight(appearance.mode)
   const swatchRing = (on: boolean) => (on ? 'ring-2 ring-white ring-offset-2 ring-offset-ink-800' : 'ring-1 ring-white/15 hover:ring-white/40')
 
   return (
@@ -131,6 +138,18 @@ function Panel({ lang, appearance, update, onClose }: { lang: Lang; appearance: 
         </span>
       </div>
 
+      <Section title={t.mode}>
+        <Segmented<ThemeMode>
+          value={appearance.mode}
+          onChange={(mode) => update({ mode })}
+          options={[
+            { id: 'dark', label: <><span aria-hidden>🌙</span> {t.modes.dark}</> },
+            { id: 'light', label: <><span aria-hidden>☀️</span> {t.modes.light}</> },
+            { id: 'auto', label: <><span aria-hidden>📱</span> {t.modes.auto}</> },
+          ]}
+        />
+      </Section>
+
       <Section title={t.accent}>
         <div className="flex flex-wrap gap-3">
           {ACCENTS.map((a) => (
@@ -142,14 +161,14 @@ function Panel({ lang, appearance, update, onClose }: { lang: Lang; appearance: 
               title={lang === 'vi' ? a.vi : a.en}
               onClick={() => update({ accent: a.id })}
               style={{ backgroundColor: a.hex }}
-              className={`grid size-10 place-items-center rounded-full text-sm font-bold text-white transition ${swatchRing(appearance.accent === a.id)}`}
+              className={`grid size-10 place-items-center rounded-full text-sm font-bold text-on-accent transition ${swatchRing(appearance.accent === a.id)}`}
             >
               {appearance.accent === a.id && '✓'}
             </button>
           ))}
           <span
             title={t.custom}
-            className={`relative grid size-10 place-items-center rounded-full text-sm font-bold text-white transition ${swatchRing(custom)}`}
+            className={`relative grid size-10 place-items-center rounded-full text-sm font-bold text-on-accent transition ${swatchRing(custom)}`}
             style={{ background: custom ? accentHex(appearance.accent) : 'conic-gradient(from 0deg, #f43f5e, #f59e0b, #84cc16, #14b8a6, #3b82f6, #8b5cf6, #f43f5e)' }}
           >
             {custom ? '✓' : '+'}
@@ -166,7 +185,10 @@ function Panel({ lang, appearance, update, onClose }: { lang: Lang; appearance: 
 
       <Section title={t.surface}>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-          {SURFACES.map((s) => (
+          {SURFACES.map((s) => {
+            const shades = light ? s.light : s.shades
+            const name = light ? (lang === 'vi' ? s.lightVi : s.lightEn) : lang === 'vi' ? s.vi : s.en
+            return (
             <button
               key={s.id}
               type="button"
@@ -174,13 +196,14 @@ function Panel({ lang, appearance, update, onClose }: { lang: Lang; appearance: 
               onClick={() => update({ surface: s.id })}
               className={`${selectableCard(appearance.surface === s.id)} p-1.5 text-center`}
             >
-              <span aria-hidden className="flex h-10 overflow-hidden rounded-lg border border-white/10" style={{ backgroundColor: s.shades[0] }}>
-                <span className="w-1/3" style={{ backgroundColor: s.shades[1] }} />
-                <span className="m-1.5 flex-1 rounded-md" style={{ backgroundColor: s.shades[3] }} />
+              <span aria-hidden className="flex h-10 overflow-hidden rounded-lg border border-white/10" style={{ backgroundColor: shades[0] }}>
+                <span className="w-1/3" style={{ backgroundColor: shades[1] }} />
+                <span className="m-1.5 flex-1 rounded-md" style={{ backgroundColor: light ? shades[2] : shades[3] }} />
               </span>
-              <span className="mt-1.5 block text-[11px] font-semibold text-white/80">{lang === 'vi' ? s.vi : s.en}</span>
+              <span className="mt-1.5 block text-[11px] font-semibold text-white/80">{name}</span>
             </button>
-          ))}
+            )
+          })}
         </div>
       </Section>
 
@@ -255,7 +278,7 @@ function Panel({ lang, appearance, update, onClose }: { lang: Lang; appearance: 
           onClick={() => update({ motion: !appearance.motion })}
           className={`relative h-7 w-12 shrink-0 rounded-full transition ${appearance.motion ? 'bg-accent-500' : 'bg-white/15'}`}
         >
-          <span className={`absolute top-1 left-1 size-5 rounded-full bg-white shadow transition-transform ${appearance.motion ? 'translate-x-5' : ''}`} />
+          <span className={`absolute top-1 left-1 size-5 rounded-full bg-on-accent shadow transition-transform ${appearance.motion ? 'translate-x-5' : ''}`} />
         </button>
       </div>
 
@@ -280,6 +303,12 @@ export function AppearanceProvider({ lang, children }: { lang: Lang; children: R
   useEffect(() => {
     applyAppearance(appearance)
     saveAppearance(appearance)
+    if (appearance.mode !== 'auto') return
+    // "Theo máy": follow the device when it switches between light and dark.
+    const query = window.matchMedia('(prefers-color-scheme: light)')
+    const onChange = () => applyAppearance(appearance)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
   }, [appearance])
 
   const update = useCallback((patch: Partial<Appearance>) => setAppearance((prev) => ({ ...prev, ...patch })), [])

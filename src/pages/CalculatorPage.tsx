@@ -63,7 +63,7 @@ export function CalculatorPage({ inputs, setInputs }: CalculatorPageProps) {
     <main className="glass-card relative w-full max-w-md overflow-hidden p-6 sm:p-8 lg:max-w-4xl lg:p-10">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent"
+        className="card-sheen pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white/[0.08] to-transparent"
       />
 
       <header className="relative mb-7 flex flex-col items-center text-center lg:mb-9">
