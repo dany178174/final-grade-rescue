@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { SectionCard } from '../components/SectionCard'
 import { CopyButton } from '../components/CopyButton'
 import { EN_DECK_LABELS, VI_DECK_LABELS } from '../components/flashcards/deckLabels'
 import { StudyDeck } from '../components/flashcards/StudyDeck'
@@ -211,22 +212,22 @@ function downloadBlob(blob: Blob, name: string) {
 
 function WaygroundExport({ t, questions, fileName }: { t: (typeof COPY)['en'] | (typeof COPY)['vi']; questions: Question[]; fileName: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+    <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
       <p className="font-semibold">Wayground</p>
       <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-white/70 marker:text-white/40">
         {t.waygroundSteps.map((step, i) => (
           <li key={i}>{step}</li>
         ))}
       </ol>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-auto grid gap-2 pt-4">
         <button
           type="button"
           onClick={() => downloadBlob(buildXlsx(toWaygroundRows(questions), 'Quiz'), fileName)}
-          className={`${secondaryButton} h-10 px-4`}
+          className={`${secondaryButton} h-10 w-full px-4`}
         >
           {t.downloadWayground}
         </button>
-        <a href={WAYGROUND_URL} target="_blank" rel="noopener noreferrer" className={`${secondaryButton} h-10 px-4`}>
+        <a href={WAYGROUND_URL} target="_blank" rel="noopener noreferrer" className={`${secondaryButton} h-10 w-full px-4`}>
           {t.openWayground}
           <ExternalLinkIcon className="size-3.5 text-white/50" />
         </a>
@@ -237,18 +238,9 @@ function WaygroundExport({ t, questions, fileName }: { t: (typeof COPY)['en'] | 
 
 function StepCard({ step, title, sub, children }: { step: number; title: string; sub: string; children: ReactNode }) {
   return (
-    <section className="glass-card p-5 sm:p-8">
-      <div className="flex items-start gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-accent-500 text-sm font-bold">
-          {step}
-        </span>
-        <div>
-          <h2 className="text-lg leading-snug font-semibold tracking-tight sm:text-xl">{title}</h2>
-          <p className="mt-0.5 text-sm text-pretty text-white/55">{sub}</p>
-        </div>
-      </div>
-      <div className="mt-5">{children}</div>
-    </section>
+    <SectionCard step={step} title={title} sub={sub}>
+      {children}
+    </SectionCard>
   )
 }
 
@@ -483,37 +475,37 @@ export default function FlashcardsPage({ params, lang = 'en' }: { params: URLSea
 
             <StepCard step={4} title={t.step4} sub={t.step4Sub}>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                   <p className="font-semibold">Quizlet</p>
                   <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-white/70 marker:text-white/40">
                     {t.quizletSteps.map((step, i) => (
                       <li key={i}>{step}</li>
                     ))}
                   </ol>
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-auto grid gap-2 pt-4">
                     <button
                       type="button"
                       onClick={async () => setQuizletCopied(await copyText(toQuizletText(cards)))}
-                      className={`${primaryButton} h-10 px-4`}
+                      className={`${primaryButton} h-10 w-full px-4`}
                     >
                       {quizletCopied ? `✓ ${t.copied}` : t.copyQuizlet}
                     </button>
-                    <a href={QUIZLET_CREATE_URL} target="_blank" rel="noopener noreferrer" className={`${secondaryButton} h-10 px-4`}>
+                    <a href={QUIZLET_CREATE_URL} target="_blank" rel="noopener noreferrer" className={`${secondaryButton} h-10 w-full px-4`}>
                       {t.openQuizlet}
                       <ExternalLinkIcon className="size-3.5 text-white/50" />
                     </a>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                   <p className="font-semibold">Anki</p>
                   <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm text-white/70 marker:text-white/40">
                     {t.ankiSteps.map((step, i) => (
                       <li key={i}>{step}</li>
                     ))}
                   </ol>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <button type="button" onClick={downloadAnki} className={`${secondaryButton} h-10 px-4`}>
+                  <div className="mt-auto grid gap-2 pt-4">
+                    <button type="button" onClick={downloadAnki} className={`${secondaryButton} h-10 w-full px-4`}>
                       {t.downloadAnki}
                     </button>
                   </div>

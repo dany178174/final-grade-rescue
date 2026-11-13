@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { SectionCard } from '../SectionCard'
 import {
   HABITS,
   LEARNING_STYLES,
@@ -40,14 +41,9 @@ export type PlanResultProps = {
 
 export function Section({ emoji, title, sub, children }: { emoji: string; title: string; sub?: string; children: ReactNode }) {
   return (
-    <section className="glass-card p-5 sm:p-8">
-      <h2 className="flex items-start gap-2.5 text-lg leading-snug font-semibold tracking-tight sm:text-xl">
-        <span aria-hidden>{emoji}</span>
-        {title}
-      </h2>
-      {sub && <p className="mt-1 text-sm text-pretty text-white/55">{sub}</p>}
-      <div className="mt-5">{children}</div>
-    </section>
+    <SectionCard emoji={emoji} title={title} sub={sub}>
+      {children}
+    </SectionCard>
   )
 }
 

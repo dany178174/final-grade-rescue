@@ -14,7 +14,7 @@ export function Footer({ lang = 'en' }: { lang?: 'en' | 'vi' }) {
   const appearance = useAppearance()
   const t = COPY[lang]
   return (
-    <footer className="mt-8 flex flex-col items-center gap-2 text-sm text-white/55">
+    <footer className="mt-auto flex flex-col items-center gap-2 pt-10 text-sm text-white/50">
       <p>{t.tagline}</p>
       <nav aria-label="More" className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
         <a href={t.switchHref} lang={lang === 'vi' ? 'en' : 'vi'} className={linkClass}>

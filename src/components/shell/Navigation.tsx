@@ -55,10 +55,10 @@ export function SideNav({ lang, path }: { lang: Lang; path: string }) {
         <button
           type="button"
           onClick={open}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white/60 transition hover:bg-white/[0.04] hover:text-white/90 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium text-white/60 transition hover:bg-white/[0.04] hover:text-white/90 focus-visible:ring-2 focus-visible:ring-accent-400/50 focus-visible:outline-none"
         >
           <PaletteIcon className="size-4" />
-          {vi ? 'Giao diện: màu, cỡ chữ…' : 'Appearance: colours, text size…'}
+          {vi ? 'Giao diện: màu, cỡ chữ…' : 'Theme & text size'}
         </button>
         {vi && (
           <a

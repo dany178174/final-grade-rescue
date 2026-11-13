@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { SectionCard } from '../../components/SectionCard'
 import { ArrowLeftIcon, ResetIcon, SparklesIcon } from '../../components/icons'
 import { BoardSheet, type SheetNeed } from '../../components/vn/BoardSheet'
 import { getVnSubject, levelOf, subjectsFor, VN_GRADES } from '../../data/vn/subjects'
@@ -79,11 +80,9 @@ const TERMS: { id: Term; label: string }[] = [
 
 function Card({ title, sub, children, className = '' }: { title: string; sub?: string; children: ReactNode; className?: string }) {
   return (
-    <section className={`glass-card p-5 sm:p-7 ${className}`}>
-      <h2 className="text-lg leading-snug font-semibold tracking-tight sm:text-xl">{title}</h2>
-      {sub && <p className="mt-0.5 text-sm text-pretty text-white/55">{sub}</p>}
-      <div className="mt-4">{children}</div>
-    </section>
+    <SectionCard title={title} sub={sub} className={className}>
+      {children}
+    </SectionCard>
   )
 }
 

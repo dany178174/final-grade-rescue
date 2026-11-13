@@ -49,7 +49,7 @@ export default function App() {
 
       <div className="relative z-10 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pt-5 xl:pt-10 xl:pr-10 xl:pb-12 xl:pl-[calc(16rem+2.5rem)]">
         <MobileTopBar lang={lang} />
-        <div className="mx-auto flex min-h-[calc(100dvh-12rem)] max-w-5xl flex-col items-center justify-center xl:min-h-[calc(100dvh-5rem)]">
+        <div className="mx-auto flex min-h-[calc(100dvh-12rem)] max-w-5xl flex-col items-center xl:min-h-[calc(100dvh-5rem)]">
           <Suspense fallback={<PageLoading vn={vn} />}>
             {renderPage(route, { inputs, setInputs, vnInputs, setVnInputs })}
           </Suspense>

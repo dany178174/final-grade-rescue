@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { SectionCard } from '../../components/SectionCard'
 import { SessionLinks } from '../../components/SessionLinks'
 import { ArrowLeftIcon, CheckIcon, ShareIcon } from '../../components/icons'
 import { ScoreInput } from '../../components/vn/ScoreInput'
@@ -110,18 +111,9 @@ const fieldClass =
 
 function Card({ step, title, sub, children }: { step: number; title: string; sub?: string; children: ReactNode }) {
   return (
-    <section className="glass-card p-5 sm:p-8">
-      <div className="flex items-start gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-accent-500 text-sm font-bold">
-          {step}
-        </span>
-        <div>
-          <h2 className="text-lg leading-snug font-semibold tracking-tight sm:text-xl">{title}</h2>
-          {sub && <p className="mt-0.5 text-sm text-pretty text-white/55">{sub}</p>}
-        </div>
-      </div>
-      <div className="mt-5">{children}</div>
-    </section>
+    <SectionCard step={step} title={title} sub={sub}>
+      {children}
+    </SectionCard>
   )
 }
 
@@ -372,7 +364,7 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
               const check = checkRow(row, today)
               const info = rowInfo(row)
               return (
-                <li key={row.id} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <li key={row.id} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
                   <div className="mb-3 flex items-center justify-between">
                     <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${colorOf(row.id)}`}>
                       {info.subject ? `${info.subject.emoji} ${info.name}` : `Môn ${index + 1}`}
@@ -381,7 +373,7 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                       ✕ Xóa
                     </button>
                   </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <label className="block">
                       <span className="mb-1.5 block text-xs font-medium text-white/65">Môn học</span>
                       <select
@@ -428,14 +420,14 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                     </label>
                     <ScoreInput
                       id={`need-${row.id}`}
-                      label="Điểm cần đạt (không bắt buộc)"
+                      label="Điểm cần đạt"
                       placeholder="VD: 8,5"
                       value={row.need}
                       error={check.needError}
-                      hint="Chưa biết? Tính ở máy tính điểm."
+                      field
                       onChange={(v) => setRow(row.id, { need: v })}
                     />
-                    <label className="block sm:col-span-2">
+                    <label className="block sm:col-span-2 lg:col-span-4">
                       <span className="mb-1.5 block text-xs font-medium text-white/65">Chủ đề khó nhất (không bắt buộc)</span>
                       <input
                         value={row.topic}
@@ -459,7 +451,7 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
             >
               ＋ Thêm môn
             </button>
-            <a href="#/vn" className={`${smallButton} h-11 rounded-2xl text-sm`}>
+            <a href="#/vn" className={secondaryButton}>
               🧮 Tính điểm cần đạt
             </a>
           </div>
@@ -485,14 +477,14 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                 ))}
               </dl>
 
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {settings.subjects.map((row) => {
                   const info = schedule.summary[row.id]
                   if (!info) return null
                   const sessionsDone = allSessions.filter((s) => s.subjectId === row.id && done[s.id]).length
                   const priority = info.tier ? PRIORITY[info.tier] : { label: 'Chưa nhập điểm cần đạt', className: 'text-white/45' }
                   return (
-                    <li key={row.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+                    <li key={row.id} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3.5">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${colorOf(row.id)}`}>
                           {rowInfo(row).subject?.emoji} {rowInfo(row).name}
@@ -542,21 +534,26 @@ export default function VnMultiPlanPage({ params }: { params: URLSearchParams })
                   const tag = offset === 0 ? 'Hôm nay' : offset === 1 ? 'Ngày mai' : null
                   return (
                     <li key={day.date}>
-                      <div className="mb-2 flex items-center gap-2">
+                      <div className="mb-2.5 flex items-center gap-2">
                         <h3 className="font-semibold">{formatDay(day.date)}</h3>
                         {tag && <span className="rounded-full bg-accent-400/15 px-2 py-0.5 text-[11px] font-semibold text-accent-200">{tag}</span>}
                         {day.weekend && <span className="text-xs text-white/40">Cuối tuần</span>}
+                        {day.sessions.length > 0 && (
+                          <span className="ml-auto text-xs text-white/40 tabular-nums">
+                            {day.sessions.filter((s) => done[s.id]).length}/{day.sessions.length} buổi
+                          </span>
+                        )}
                       </div>
                       {day.exams.map((id) => {
                         const row = settings.subjects.find((s) => s.id === id)!
                         return (
-                          <p key={id} className="mb-2 rounded-xl border border-pink-300/25 bg-pink-400/[0.08] px-3.5 py-2.5 text-sm text-pink-100">
+                          <p key={id} className="mb-2.5 rounded-2xl border border-pink-300/25 bg-pink-400/[0.08] px-4 py-3 text-sm text-pretty text-pink-100">
                             📝 <strong>Thi {rowInfo(row).name}</strong> ({EXAM_KINDS[row.kind].label.toLowerCase()}). Sáng ôn nhẹ 15 phút, ăn sáng đầy đủ,
                             mang đủ đồ dùng. Chúc thi tốt!
                           </p>
                         )
                       })}
-                      <ul className="space-y-2">
+                      <ul className="divide-y divide-white/[0.06] overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]">
                         {day.sessions.map((session) => (
                           <SessionItem
                             key={session.id}
@@ -600,7 +597,7 @@ function SessionItem({
 }) {
   const phase = PHASE_LABELS[session.phase]
   return (
-    <li className={`flex gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 transition ${done ? 'opacity-55' : ''}`}>
+    <li className={`flex gap-3 px-3.5 py-3.5 transition sm:gap-4 sm:px-4 ${done ? 'opacity-55' : ''}`}>
       <button
         type="button"
         onClick={onToggle}
@@ -612,9 +609,13 @@ function SessionItem({
       >
         {done && <CheckIcon className="size-4" />}
       </button>
+      <p className="hidden w-14 shrink-0 pt-0.5 text-sm leading-tight font-semibold text-white tabular-nums sm:block">
+        {session.start}
+        <span className="block text-xs font-normal text-white/40">{session.end}</span>
+      </p>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="font-semibold text-white tabular-nums">
+          <span className="font-semibold text-white tabular-nums sm:hidden">
             {session.start}–{session.end}
           </span>
           <span className={`rounded-full border px-2 py-0.5 font-semibold ${color}`}>
