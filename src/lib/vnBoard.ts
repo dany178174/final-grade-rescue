@@ -53,7 +53,10 @@ export const newBoardRow = (mon = '', patch: Partial<BoardRow> = {}): BoardRow =
   id: Math.random().toString(36).slice(2, 8),
   mon,
   khac: '',
-  hs1: [emptyCell(true), emptyCell(), emptyCell(), ...(['toan', 'van', 'anh'].includes(mon) ? [emptyCell(true)] : [])],
+  // As in the class sheet: Toán, Văn, Anh have three 15' tests (the third is a target); other subjects two (the second is a target).
+  hs1: ['toan', 'van', 'anh'].includes(mon)
+    ? [emptyCell(true), emptyCell(), emptyCell(), emptyCell(true)]
+    : [emptyCell(true), emptyCell(), emptyCell(true)],
   cd: null,
   hs2: [emptyCell()],
   hs3: emptyCell(true),
@@ -119,7 +122,8 @@ export function subjectIdFromName(name: string): string | null {
 }
 
 export const DEFAULT_SUBJECTS = {
-  thpt: ['toan', 'van', 'anh', 'su', 'ly', 'hoa', 'sinh', 'tinhoc', 'qpan'],
+  // Same order as the class planning sheet.
+  thpt: ['toan', 'van', 'anh', 'sinh', 'su', 'hoa', 'ly', 'tinhoc', 'qpan'],
   thcs: ['van', 'toan', 'anh', 'gdcd', 'lsdl', 'khtn', 'congnghe', 'tinhoc'],
 }
 
@@ -326,4 +330,9 @@ export function exampleRows(): BoardRow[] {
     newBoardRow('tinhoc', { hs1: [c('9', true), c('10'), c('10')], hs2: [c('9.3')], hs3: c('9.2', true) }),
     newBoardRow('qpan', { hs1: [c('10'), c('9', true)], hs2: [c('9')], hs3: c('9', true) }),
   ]
+}
+
+/** A fresh board laid out like the class planning sheet. */
+export function templateRows(grade: number): BoardRow[] {
+  return DEFAULT_SUBJECTS[grade >= 10 ? 'thpt' : 'thcs'].map((mon) => newBoardRow(mon))
 }
