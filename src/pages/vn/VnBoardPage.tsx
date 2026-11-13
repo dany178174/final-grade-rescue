@@ -1,16 +1,19 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowLeftIcon } from '../../components/icons'
 import { getVnSubject, levelOf, subjectsFor, VN_GRADES } from '../../data/vn/subjects'
 import { TIER_STYLES } from '../../lib/tierStyles'
-import { secondaryButton, selectableCard, smallButton } from '../../lib/ui'
+import { primaryButton, secondaryButton, selectableCard, smallButton } from '../../lib/ui'
+import { exportBoardXlsx, exportFileName, importBoardFromXlsx } from '../../lib/boardExcel'
 import {
   DEFAULT_SUBJECTS,
   emptyCell,
   exampleRows,
+  fillPlan,
   goalPlan,
   MAX_HS1,
   MAX_HS2,
   newBoardRow,
+  normalizeRow,
   overview,
   RANK_LABELS,
   rowStats,
@@ -32,7 +35,7 @@ function loadBoard(): Board {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as Board
-      if (Array.isArray(parsed.rows)) return { ...DEFAULT_BOARD, ...parsed }
+      if (Array.isArray(parsed.rows)) return { ...DEFAULT_BOARD, ...parsed, rows: parsed.rows.map(normalizeRow) }
     }
   } catch {
     // Fall through to an empty board.
@@ -76,19 +79,18 @@ function Check({ ok, label, detail }: { ok: boolean; label: string; detail?: str
 }
 
 /** One score cell: the number plus a tap target that switches between final and planned. */
-function ScoreCell({ cell, label, onChange }: { cell: Cell; label: string; onChange: (cell: Cell) => void }) {
+function ScoreCell({ cell, label, caption, onChange }: { cell: Cell; label: string; caption: string; onChange: (cell: Cell) => void }) {
   const state = parseScore(cell.v)
   const filled = state.status === 'valid'
   const border =
     state.status === 'invalid'
       ? 'border-red-400/70'
-      : !filled
-        ? 'border-white/15'
-        : cell.plan
-          ? 'border-dashed border-emerald-300/70 bg-emerald-400/[0.08]'
-          : 'border-amber-300/70 bg-amber-300/[0.08]'
+      : cell.plan
+        ? `border-dashed border-emerald-300/70 ${filled ? 'bg-emerald-400/[0.1]' : 'bg-emerald-400/[0.04]'}`
+        : `border-amber-300/70 ${filled ? 'bg-amber-300/[0.1]' : 'bg-amber-300/[0.03]'}`
   return (
     <div className="flex w-14 flex-col items-center gap-1">
+      <span className="text-[10px] font-medium text-white/45">{caption}</span>
       <input
         type="text"
         inputMode="decimal"
@@ -98,20 +100,16 @@ function ScoreCell({ cell, label, onChange }: { cell: Cell; label: string; onCha
         onChange={(e) => onChange({ ...cell, v: sanitizeScoreInput(e.target.value) })}
         className={`h-11 w-14 rounded-xl border bg-white/[0.06] text-center text-base font-medium text-white tabular-nums outline-none placeholder:text-white/25 focus:ring-4 focus:ring-fuchsia-500/20 ${border}`}
       />
-      {filled ? (
-        <button
-          type="button"
-          onClick={() => onChange({ ...cell, plan: !cell.plan })}
-          aria-label={`${label}: ${cell.plan ? 'điểm dự kiến' : 'điểm đã chốt'}. Chạm để đổi.`}
-          className={`h-5 rounded-full px-1.5 text-[10px] font-semibold whitespace-nowrap ${
-            cell.plan ? 'bg-emerald-400/15 text-emerald-200' : 'bg-amber-300/15 text-amber-200'
-          }`}
-        >
-          {cell.plan ? 'Dự kiến' : 'Chốt'}
-        </button>
-      ) : (
-        <span className="h-5" aria-hidden />
-      )}
+      <button
+        type="button"
+        onClick={() => onChange({ ...cell, plan: !cell.plan })}
+        aria-label={`${label}: ${cell.plan ? 'điểm phấn đấu' : 'điểm đã chốt'}. Chạm để đổi.`}
+        className={`h-5 rounded-full px-1.5 text-[10px] font-semibold whitespace-nowrap ${
+          cell.plan ? 'bg-emerald-400/15 text-emerald-200' : 'bg-amber-300/15 text-amber-200'
+        } ${filled ? '' : 'opacity-60'}`}
+      >
+        {cell.plan ? 'Phấn đấu' : 'Chốt'}
+      </button>
     </div>
   )
 }
@@ -121,12 +119,16 @@ function CellGroup({
   cells,
   max,
   min,
+  caption,
+  newCell = () => emptyCell(),
   onChange,
 }: {
   title: string
   cells: Cell[]
   max: number
   min: number
+  caption: (index: number) => string
+  newCell?: () => Cell
   onChange: (cells: Cell[]) => void
 }) {
   return (
@@ -137,13 +139,14 @@ function CellGroup({
           <ScoreCell
             key={i}
             cell={cell}
-            label={`${title}, ô ${i + 1}`}
+            caption={caption(i)}
+            label={`${title}, ${caption(i)}, ô ${i + 1}`}
             onChange={(next) => onChange(cells.map((c, j) => (j === i ? next : c)))}
           />
         ))}
-        <div className="flex gap-1">
+        <div className="flex gap-1 self-center">
           {cells.length < max && (
-            <button type="button" onClick={() => onChange([...cells, emptyCell()])} aria-label={`Thêm ô ${title}`} className={`${smallButton} h-11 w-9 px-0`}>
+            <button type="button" onClick={() => onChange([...cells, newCell()])} aria-label={`Thêm ô ${title}`} className={`${smallButton} h-11 w-9 px-0`}>
               ＋
             </button>
           )}
@@ -209,8 +212,21 @@ function AverageChart({ items }: { items: { id: string; name: string; avg: numbe
   )
 }
 
+function downloadBlob(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = name
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+type Notice = { kind: 'ok' | 'error'; text: string }
+
 export default function VnBoardPage() {
   const [board, setBoard] = useState<Board>(loadBoard)
+  const [notice, setNotice] = useState<Notice | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     try {
@@ -251,6 +267,50 @@ export default function VnBoardPage() {
   const isYear = board.term === 'hk2'
   const goalLabel = board.goal === 'hsxs' ? 'Học sinh Xuất sắc' : 'Học sinh Giỏi'
 
+  const cdCount = board.rows.filter((r) => r.cd).length
+
+  const openFile = async (file: File) => {
+    try {
+      const result = await importBoardFromXlsx(await file.arrayBuffer(), board)
+      setBoard(result.board)
+      setNotice({
+        kind: 'ok',
+        text: [`Đã đọc ${result.subjects} môn từ “${file.name}”.`, ...result.warnings].join(' '),
+      })
+    } catch (error) {
+      setNotice({
+        kind: 'error',
+        text: `Không đọc được file. ${error instanceof Error ? error.message : ''} Hãy dùng file .xlsx theo mẫu kế hoạch của lớp.`,
+      })
+    }
+  }
+
+  const autoFill = () => {
+    let filled = 0
+    const unreachable: string[] = []
+    const rows = board.rows.map((row) => {
+      const target = planById[row.id]?.target
+      if (target === undefined) return row
+      const result = fillPlan(row, target, board.term)
+      filled += result.filled
+      if (!result.reachable && result.filled) unreachable.push(nameOf(row))
+      return result.row
+    })
+    const missingFinal = board.rows.some((row) => [...row.hs1, ...row.hs2, row.hs3].some((c) => !c.plan && c.v === ''))
+    setBoard({ ...board, rows })
+    setNotice(
+      filled
+        ? {
+            kind: unreachable.length ? 'error' : 'ok',
+            text:
+              `Đã điền ${filled} ô phấn đấu để đạt ${goalLabel}.` +
+              (unreachable.length ? ` Môn ${unreachable.join(', ')} cần trên 10 điểm, đã điền tối đa 10.` : ' Bạn có thể sửa lại từng ô.') +
+              (missingFinal ? ' Mẹo: nhập đủ điểm đã chốt (ô vàng) trước, web sẽ điền sát với sức học của bạn hơn.' : ''),
+          }
+        : { kind: 'error', text: 'Không còn ô phấn đấu (xanh) nào để trống. Đổi ô sang “Phấn đấu” hoặc xóa điểm để web điền.' },
+    )
+  }
+
   const titleBadge =
     ov.title === 'xuat-sac'
       ? { text: '🏆 Học sinh Xuất sắc', cls: 'border-amber-300/40 bg-amber-300/15 text-amber-200' }
@@ -282,6 +342,80 @@ export default function VnBoardPage() {
       </header>
 
       <div className="space-y-4 sm:space-y-5">
+        <section className="glass-card relative overflow-hidden border-emerald-300/30 p-5 sm:p-7">
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-400/[0.12] via-transparent to-sky-400/[0.1]" />
+          <div className="relative">
+            <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight sm:text-xl">
+              <span aria-hidden>📗</span> Làm kế hoạch bằng file Excel của lớp
+            </h2>
+            <p className="mt-1 text-sm text-pretty text-white/65">
+              Mở file kế hoạch (mẫu “Kế hoạch HK…”), để web tự điền các ô xanh phấn đấu cho đúng mục tiêu, rồi tải về file
+              đúng mẫu để nộp. Điểm và họ tên chỉ nằm trên máy của bạn.
+            </p>
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
+              <button type="button" onClick={() => fileRef.current?.click()} className={`${secondaryButton} h-auto flex-col gap-0.5 py-3`}>
+                <span className="text-base">📂 Mở file Excel</span>
+                <span className="text-[11px] font-normal text-white/55">Đọc điểm và màu vàng/xanh</span>
+              </button>
+              <button type="button" onClick={autoFill} disabled={!board.rows.length} className={`${primaryButton} h-auto flex-col gap-0.5 py-3`}>
+                <span className="text-base">✨ Tự điền điểm phấn đấu</span>
+                <span className="text-[11px] font-normal text-white/80">Theo mục tiêu {goalLabel}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadBlob(exportBoardXlsx(board), exportFileName(board))}
+                disabled={!board.rows.length}
+                className={`${secondaryButton} h-auto flex-col gap-0.5 border-emerald-300/40 py-3`}
+              >
+                <span className="text-base">⬇ Tải file Excel</span>
+                <span className="text-[11px] font-normal text-white/55">Đúng mẫu, có công thức TBHK</span>
+              </button>
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) void openFile(file)
+                e.target.value = ''
+              }}
+            />
+            <div className="mt-4 grid gap-3 sm:grid-cols-[2fr_1fr]">
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-medium text-white/65">Họ và tên (ghi vào file)</span>
+                <input
+                  value={board.name ?? ''}
+                  maxLength={60}
+                  onChange={(e) => set({ name: e.target.value })}
+                  placeholder="VD: Nguyễn Văn A"
+                  className="h-11 w-full rounded-xl border border-white/15 bg-white/[0.06] px-3.5 text-base text-white outline-none placeholder:text-white/30 focus:border-fuchsia-300/60 focus:ring-4 focus:ring-fuchsia-500/20"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-medium text-white/65">Mã HS (không bắt buộc)</span>
+                <input
+                  value={board.code ?? ''}
+                  maxLength={20}
+                  onChange={(e) => set({ code: e.target.value })}
+                  className="h-11 w-full rounded-xl border border-white/15 bg-white/[0.06] px-3.5 text-base text-white outline-none focus:border-fuchsia-300/60 focus:ring-4 focus:ring-fuchsia-500/20"
+                />
+              </label>
+            </div>
+            {notice && (
+              <p
+                role="status"
+                className={`mt-4 rounded-xl border px-3.5 py-2.5 text-sm text-pretty ${
+                  notice.kind === 'ok' ? 'border-emerald-300/30 bg-emerald-400/10 text-emerald-100' : 'border-amber-300/30 bg-amber-300/10 text-amber-100'
+                }`}
+              >
+                {notice.text}
+              </p>
+            )}
+          </div>
+        </section>
+
         <Card title="Thiết lập">
           <p className="mb-2 text-sm font-medium text-white/85">Lớp</p>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
@@ -439,7 +573,15 @@ export default function VnBoardPage() {
           </Card>
         )}
 
-        <Card title="Điểm các môn" sub="Gõ điểm vào ô. Chạm nhãn dưới ô để đổi giữa Chốt (điểm đã chốt) và Dự kiến (điểm phấn đấu). Ô để trống là bài chưa có điểm.">
+        <Card
+          title="Điểm các môn"
+          sub="Gõ điểm vào ô. Ô vàng là điểm đã chốt, ô xanh là điểm phấn đấu: chạm nhãn dưới ô để đổi. Ô vàng để trống là bài chưa có điểm."
+        >
+          {board.rows.length > 0 && (
+            <p className={`mb-3 text-xs ${cdCount === 3 ? 'text-emerald-300' : 'text-amber-200/85'}`}>
+              Chuyên đề: {cdCount}/3 môn {cdCount === 3 ? '✓' : '(mỗi học sinh điền cột chuyên đề ở 3 môn, bấm “＋ CĐ” ở môn bạn học chuyên đề)'}
+            </p>
+          )}
           {!board.grade ? (
             <p className="rounded-xl border border-amber-300/25 bg-amber-300/[0.07] px-3.5 py-2.5 text-sm text-amber-100/85">Chọn lớp ở phần Thiết lập trước nhé.</p>
           ) : (
@@ -480,10 +622,46 @@ export default function VnBoardPage() {
                       </div>
 
                       <div className="mt-3 space-y-3">
-                        <CellGroup title="Hệ số 1 (miệng, 15 phút, chuyên đề)" cells={row.hs1} max={MAX_HS1} min={1} onChange={(hs1) => setRow(row.id, { hs1 })} />
+                        <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
+                          <CellGroup
+                            title="Hệ số 1 (miệng, 15 phút)"
+                            cells={row.hs1}
+                            max={MAX_HS1}
+                            min={1}
+                            caption={(i) => (i === 0 ? 'Miệng' : "15'")}
+                            onChange={(hs1) => setRow(row.id, { hs1 })}
+                          />
+                          <div>
+                            <p className="mb-1.5 text-xs font-medium text-white/60">Chuyên đề</p>
+                            {row.cd ? (
+                              <div className="flex items-start gap-1">
+                                <ScoreCell cell={row.cd} caption="CĐ" label={`Chuyên đề môn ${nameOf(row)}`} onChange={(cd) => setRow(row.id, { cd })} />
+                                <button
+                                  type="button"
+                                  onClick={() => setRow(row.id, { cd: null })}
+                                  aria-label={`Bỏ chuyên đề môn ${nameOf(row)}`}
+                                  className={`${smallButton} mt-[1.125rem] h-11 w-9 px-0`}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ) : (
+                              <button type="button" onClick={() => setRow(row.id, { cd: emptyCell(true) })} className={`${smallButton} mt-[1.125rem] h-11`}>
+                                ＋ CĐ
+                              </button>
+                            )}
+                          </div>
+                        </div>
                         <div className="flex flex-wrap gap-x-6 gap-y-3">
-                          <CellGroup title="Hệ số 2 (45 phút, giữa kì)" cells={row.hs2} max={MAX_HS2} min={1} onChange={(hs2) => setRow(row.id, { hs2 })} />
-                          <CellGroup title="Hệ số 3 (cuối kì)" cells={[row.hs3]} max={1} min={1} onChange={([hs3]) => setRow(row.id, { hs3 })} />
+                          <CellGroup
+                            title="Hệ số 2 (45 phút)"
+                            cells={row.hs2}
+                            max={MAX_HS2}
+                            min={1}
+                            caption={() => "45'"}
+                            onChange={(hs2) => setRow(row.id, { hs2 })}
+                          />
+                          <CellGroup title="Hệ số 3" cells={[row.hs3]} max={1} min={1} caption={() => 'Cuối kì'} onChange={([hs3]) => setRow(row.id, { hs3 })} />
                           {isYear && (
                             <div>
                               <p className="mb-1.5 text-xs font-medium text-white/60">ĐTB học kì I</p>

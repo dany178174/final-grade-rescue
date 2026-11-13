@@ -13,8 +13,20 @@
 
 import { parseScore, roundAverage } from './vnGrade'
 
+/** A score slot. `plan` marks a target ("phấn đấu", green in the class sheet); otherwise final ("chốt", yellow). */
 export type Cell = { v: string; plan: boolean }
-export type BoardRow = { id: string; mon: string; khac: string; hs1: Cell[]; hs2: Cell[]; hs3: Cell; hk1: string }
+export type BoardRow = {
+  id: string
+  mon: string
+  khac: string
+  /** hs1[0] is the oral test (miệng), the rest are 15-minute tests. */
+  hs1: Cell[]
+  /** Chuyên đề score (hệ số 1), only for subjects the student takes a chuyên đề in. */
+  cd: Cell | null
+  hs2: Cell[]
+  hs3: Cell
+  hk1: string
+}
 export type Term = 'hk1' | 'hk2'
 export type Goal = 'hsg' | 'hsxs'
 
@@ -25,23 +37,86 @@ export type Board = {
   commentsOk: boolean
   conductOk: boolean
   rows: BoardRow[]
+  /** Only used to fill the exported class sheet; stays on this device. */
+  name?: string
+  code?: string
 }
 
-export const MAX_HS1 = 8
+/** Miệng + five 15-minute columns, as in the class sheet. */
+export const MAX_HS1 = 6
 export const MAX_HS2 = 3
 
-export const emptyCell = (): Cell => ({ v: '', plan: false })
+export const emptyCell = (plan = false): Cell => ({ v: '', plan })
 
+/** Default slots follow the class sheet: miệng and cuối kì are targets, 15' and 45' are final. */
 export const newBoardRow = (mon = '', patch: Partial<BoardRow> = {}): BoardRow => ({
   id: Math.random().toString(36).slice(2, 8),
   mon,
   khac: '',
-  hs1: [emptyCell(), emptyCell(), emptyCell()],
+  hs1: [emptyCell(true), emptyCell(), emptyCell(), ...(['toan', 'van', 'anh'].includes(mon) ? [emptyCell(true)] : [])],
+  cd: null,
   hs2: [emptyCell()],
-  hs3: emptyCell(),
+  hs3: emptyCell(true),
   hk1: '',
   ...patch,
 })
+
+/** Older saved boards have no chuyên đề slot. */
+export function normalizeRow(row: BoardRow): BoardRow {
+  return { ...row, cd: row.cd ?? null, hs1: row.hs1.slice(0, MAX_HS1), hs2: row.hs2.slice(0, MAX_HS2) }
+}
+
+/** Names as written in the class sheet. */
+export const SHEET_NAMES: Record<string, string> = {
+  toan: 'Toán',
+  van: 'Văn',
+  anh: 'Anh',
+  sinh: 'Sinh',
+  su: 'Sử',
+  hoa: 'Hoá',
+  ly: 'Lý',
+  tinhoc: 'Tin',
+  qpan: 'GDQP',
+  dia: 'Địa',
+  ktpl: 'KTPL',
+  congnghe: 'Công nghệ',
+  gdcd: 'GDCD',
+  lsdl: 'LS&ĐL',
+  khtn: 'KHTN',
+}
+
+const fold = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .toLowerCase()
+    .replace(/[^a-z0-9&]/g, '')
+
+const NAME_ALIASES: [string, string[]][] = [
+  ['toan', ['toan']],
+  ['van', ['van', 'nguvan']],
+  ['anh', ['anh', 'tienganh', 'ngoaingu', 'ngoaingu1']],
+  ['sinh', ['sinh', 'sinhhoc']],
+  ['su', ['su', 'lichsu']],
+  ['hoa', ['hoa', 'hoahoc']],
+  ['ly', ['ly', 'li', 'vatly', 'vatli']],
+  ['tinhoc', ['tin', 'tinhoc']],
+  ['qpan', ['gdqp', 'qp', 'gdqpan', 'quocphong', 'gdquocphongvaanninh']],
+  ['dia', ['dia', 'diali', 'dialy']],
+  ['ktpl', ['ktpl', 'gdktpl', 'gdkt&pl', 'giaoduckinhtevaphapluat']],
+  ['congnghe', ['cn', 'congnghe']],
+  ['gdcd', ['gdcd', 'giaoduccongdan']],
+  ['lsdl', ['ls&dl', 'lsdl', 'lichsuvadiali', 'lichsuvadialy']],
+  ['khtn', ['khtn', 'khoahoctunhien']],
+]
+
+/** Maps a subject name from a spreadsheet ("Hoá", "Ngữ văn", "GDQP"…) to a subject id. */
+export function subjectIdFromName(name: string): string | null {
+  const key = fold(name)
+  if (!key) return null
+  return NAME_ALIASES.find(([, aliases]) => aliases.includes(key))?.[0] ?? null
+}
 
 export const DEFAULT_SUBJECTS = {
   thpt: ['toan', 'van', 'anh', 'su', 'ly', 'hoa', 'sinh', 'tinhoc', 'qpan'],
@@ -72,6 +147,7 @@ export type RowStats = {
 export function rowStats(row: BoardRow, term: Term): RowStats {
   const cells = [
     ...row.hs1.map((c) => ({ c, w: 1 })),
+    ...(row.cd ? [{ c: row.cd, w: 1 }] : []),
     ...row.hs2.map((c) => ({ c, w: 2 })),
     { c: row.hs3, w: 3 },
   ]
@@ -129,6 +205,50 @@ export function needOnOpen(stats: RowStats, target: number): number {
   }
   const x = (termTarget * stats.totalWeight - stats.finalSum) / stats.openWeight
   return Math.round(x * 100) / 100
+}
+
+/** Rounds a target score up to a quarter point, the finest step teachers usually grade in. */
+const ceilQuarter = (x: number) => Math.ceil(x * 4 - 1e-9) / 4
+
+/**
+ * Fills every empty target cell ("phấn đấu") of a subject with one score high
+ * enough for the sheet's TBHK (or the year average in HK II) to reach `target`,
+ * and never lower than the target itself or the subject's current average.
+ */
+export function fillPlan(row: BoardRow, target: number, term: Term): { row: BoardRow; filled: number; reachable: boolean } {
+  const slots = [...row.hs1, ...(row.cd ? [row.cd] : []), ...row.hs2, row.hs3]
+  const weights = [...row.hs1.map(() => 1), ...(row.cd ? [1] : []), ...row.hs2.map(() => 2), 3]
+  let sum = 0
+  let weight = 0
+  let finalSum = 0
+  let finalWeight = 0
+  let openWeight = 0
+  slots.forEach((cell, i) => {
+    const v = value(cell)
+    if (v !== null) {
+      sum += v * weights[i]
+      weight += weights[i]
+      if (!cell.plan) {
+        finalSum += v * weights[i]
+        finalWeight += weights[i]
+      }
+    } else if (cell.plan) openWeight += weights[i]
+  })
+  if (!openWeight) return { row, filled: 0, reachable: true }
+
+  const hk1 = parseScore(row.hk1)
+  const termTarget = term === 'hk2' && hk1.status === 'valid' ? (3 * target - hk1.value) / 2 : target
+  const needed = (termTarget * (weight + openWeight) - sum) / openWeight
+  // Never aim below the current average, so a target cell can't pull the TBHK down.
+  const level = weight ? sum / weight : finalWeight ? finalSum / finalWeight : 0
+  const score = Math.min(10, ceilQuarter(Math.max(needed, termTarget, level)))
+  const text = String(score)
+  const fill = (cell: Cell): Cell => (cell.plan && value(cell) === null ? { ...cell, v: text } : cell)
+  return {
+    row: { ...row, hs1: row.hs1.map(fill), cd: row.cd ? fill(row.cd) : null, hs2: row.hs2.map(fill), hs3: fill(row.hs3) },
+    filled: slots.filter((c) => c.plan && value(c) === null).length,
+    reachable: needed <= 10,
+  }
 }
 
 export type Rank = 'tot' | 'kha' | 'dat' | 'chua-dat'
