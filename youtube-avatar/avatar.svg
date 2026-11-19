@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="65%">
+      <stop offset="0" stop-color="#3FD0C9"/>
+      <stop offset="0.6" stop-color="#139A9C"/>
+      <stop offset="1" stop-color="#0B5563"/>
+    </radialGradient>
+    <radialGradient id="face" cx="42%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#FFF27A"/>
+      <stop offset="0.55" stop-color="#FFD12E"/>
+      <stop offset="1" stop-color="#F2A10C"/>
+    </radialGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A6248"/>
+      <stop offset="1" stop-color="#5A3D2B"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E9EEF2"/>
+      <stop offset="1" stop-color="#8E9AA5"/>
+    </linearGradient>
+    <radialGradient id="coin" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#FFF3A0"/>
+      <stop offset="0.6" stop-color="#FFC21A"/>
+      <stop offset="1" stop-color="#D98A00"/>
+    </radialGradient>
+    <radialGradient id="hand" cx="40%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#FFEB6B"/>
+      <stop offset="1" stop-color="#F5B014"/>
+    </radialGradient>
+    <filter id="sh" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#04313A" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <!-- soft rays -->
+  <g opacity="0.10" fill="#FFFFFF">
+    <path d="M400 380 L360 0 L440 0Z"/><path d="M400 380 L800 300 L800 400Z"/>
+    <path d="M400 380 L0 300 L0 400Z"/><path d="M400 380 L700 0 L800 60Z"/>
+    <path d="M400 380 L100 0 L0 60Z"/><path d="M400 380 L800 640 L740 720Z"/>
+    <path d="M400 380 L0 640 L60 720Z"/>
+  </g>
+
+  <g filter="url(#sh)">
+    <!-- face -->
+    <circle cx="400" cy="395" r="215" fill="url(#face)" stroke="#C97A00" stroke-width="6"/>
+
+    <!-- flat cap -->
+    <path d="M178 330 C170 200 280 128 410 130 C540 132 640 190 628 300
+             C600 268 520 250 430 252 C320 254 230 280 178 330Z"
+          fill="url(#cap)" stroke="#3E2A1D" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M200 312 C260 262 360 246 450 250 C540 254 600 270 628 300
+             C600 318 560 312 520 300 C440 282 330 286 240 322 C220 330 205 326 200 312Z"
+          fill="#4A3223" stroke="#3E2A1D" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M250 200 C320 160 430 150 520 175" fill="none" stroke="#A67C5E" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+    <path d="M300 160 C330 200 340 230 345 262" fill="none" stroke="#3E2A1D" stroke-width="4" opacity="0.5"/>
+    <path d="M480 150 C470 190 468 220 470 252" fill="none" stroke="#3E2A1D" stroke-width="4" opacity="0.5"/>
+    <circle cx="405" cy="135" r="13" fill="#6B4A35" stroke="#3E2A1D" stroke-width="4"/>
+    <!-- patch -->
+    <rect x="540" y="200" width="44" height="38" rx="6" transform="rotate(14 562 219)" fill="#7E8C5A" stroke="#3E2A1D" stroke-width="4"/>
+    <path d="M546 206 l32 26 M550 232 l8 -6 M570 208 l6 6" stroke="#3E2A1D" stroke-width="3" transform="rotate(14 562 219)"/>
+
+    <!-- eyebrows (worried/hopeful) -->
+    <path d="M285 335 C305 316 335 310 360 318" fill="none" stroke="#7A4A12" stroke-width="10" stroke-linecap="round"/>
+    <path d="M440 318 C465 310 495 316 515 335" fill="none" stroke="#7A4A12" stroke-width="10" stroke-linecap="round"/>
+
+    <!-- eyes -->
+    <g stroke="#7A4A12" stroke-width="5">
+      <ellipse cx="333" cy="385" rx="40" ry="50" fill="#FFFFFF"/>
+      <ellipse cx="467" cy="385" rx="40" ry="50" fill="#FFFFFF"/>
+    </g>
+    <circle cx="338" cy="370" r="27" fill="#2E8BE6"/>
+    <circle cx="472" cy="370" r="27" fill="#2E8BE6"/>
+    <circle cx="338" cy="370" r="14" fill="#0D1B2A"/>
+    <circle cx="472" cy="370" r="14" fill="#0D1B2A"/>
+    <circle cx="347" cy="360" r="8" fill="#FFFFFF"/>
+    <circle cx="481" cy="360" r="8" fill="#FFFFFF"/>
+    <circle cx="330" cy="381" r="4" fill="#FFFFFF"/>
+    <circle cx="464" cy="381" r="4" fill="#FFFFFF"/>
+
+    <!-- cheeks -->
+    <ellipse cx="268" cy="460" rx="30" ry="18" fill="#FF7A59" opacity="0.45"/>
+    <ellipse cx="532" cy="460" rx="30" ry="18" fill="#FF7A59" opacity="0.45"/>
+
+    <!-- mouth -->
+    <path d="M300 462 C330 470 470 470 500 462 C495 540 440 568 400 568 C360 568 305 540 300 462Z"
+          fill="#8E1F1F" stroke="#7A4A12" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M345 540 C370 525 430 525 455 540 C440 556 420 564 400 564 C380 564 360 556 345 540Z" fill="#E8575A"/>
+    <!-- teeth with a gap and a gold tooth -->
+    <g stroke="#B9A88A" stroke-width="2">
+      <path d="M312 467 L340 469 L338 492 C330 494 318 490 314 482Z" fill="#FFFDF4"/>
+      <rect x="343" y="469" width="27" height="28" rx="5" fill="#FFFDF4"/>
+      <rect x="403" y="469" width="27" height="30" rx="5" fill="#FFC21A" stroke="#C98400"/>
+      <rect x="433" y="469" width="27" height="27" rx="5" fill="#FFFDF4"/>
+      <path d="M463 469 L488 467 L486 482 C482 490 470 494 462 492Z" fill="#FFFDF4"/>
+    </g>
+    <path d="M407 474 L412 492" stroke="#FFF6C8" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- left open hand (palm up, asking) -->
+  <g filter="url(#sh)" transform="translate(-15 12)" stroke="#C97A00" stroke-width="5" stroke-linejoin="round" fill="url(#hand)">
+    <path d="M250 590 C215 600 170 600 132 588 C110 581 112 560 134 558
+             C112 552 110 530 134 528 C114 520 118 498 142 500
+             C128 488 138 470 160 476 C190 484 215 500 240 512
+             C258 500 270 486 280 470 C292 456 312 466 306 486
+             C300 510 292 530 290 548 C288 572 272 586 250 590Z"/>
+    <path d="M134 558 C160 562 190 562 214 556 M134 528 C160 532 188 534 212 530 M142 500 C168 506 190 512 212 516"
+          fill="none" stroke-width="4"/>
+  </g>
+  <!-- the coin flipping in the air -->
+  <g filter="url(#sh)">
+    <ellipse cx="135" cy="405" rx="26" ry="30" fill="url(#coin)" stroke="#B36F00" stroke-width="5"/>
+    <text x="135" y="417" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="32" fill="#B36F00">$</text>
+  </g>
+
+  <!-- right hand holding plate -->
+  <g filter="url(#sh)" transform="translate(-75 -25)">
+    <ellipse cx="565" cy="640" rx="150" ry="42" fill="url(#plate)" stroke="#5E6A75" stroke-width="5"/>
+    <ellipse cx="565" cy="632" rx="112" ry="26" fill="#B7C1CA" stroke="#7D8994" stroke-width="3"/>
+    <!-- banknote -->
+    <g transform="rotate(-12 545 612)">
+      <rect x="475" y="590" width="140" height="56" rx="6" fill="#4CAF50" stroke="#1E6B24" stroke-width="4"/>
+      <rect x="487" y="600" width="116" height="36" rx="4" fill="none" stroke="#A5D6A7" stroke-width="3"/>
+      <circle cx="545" cy="618" r="14" fill="#A5D6A7" stroke="#1E6B24" stroke-width="3"/>
+      <text x="545" y="626" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="#1E6B24">$</text>
+    </g>
+    <!-- coins -->
+    <g stroke="#B36F00" stroke-width="4">
+      <ellipse cx="610" cy="628" rx="28" ry="12" fill="#E39A00"/>
+      <ellipse cx="610" cy="622" rx="28" ry="12" fill="url(#coin)"/>
+      <ellipse cx="640" cy="640" rx="26" ry="11" fill="url(#coin)"/>
+      <ellipse cx="500" cy="644" rx="24" ry="10" fill="url(#coin)"/>
+      <ellipse cx="595" cy="604" rx="24" ry="10" fill="#E39A00"/>
+      <ellipse cx="595" cy="599" rx="24" ry="10" fill="url(#coin)"/>
+    </g>
+    <!-- thumb + fingers under plate -->
+    <g fill="url(#hand)" stroke="#C97A00" stroke-width="5" stroke-linejoin="round">
+      <path d="M680 690 C700 700 728 696 738 676 C746 660 734 644 716 650 C704 654 690 664 680 672Z"/>
+      <path d="M640 676 C650 700 690 712 720 698 C700 690 690 684 684 668Z"/>
+      <path d="M676 646 C690 636 708 630 720 640 C728 650 718 662 700 664 C688 664 680 658 676 646Z"/>
+    </g>
+  </g>
+</svg>
